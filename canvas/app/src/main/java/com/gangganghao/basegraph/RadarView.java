@@ -1,6 +1,8 @@
 package com.gangganghao.basegraph;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -9,6 +11,11 @@ import android.view.View;
  * Date: 2016-10-21 {HOUR}:17
  */
 public class RadarView extends View {
+    private Paint mPaint;
+
+    private int [][]  points;
+
+
     public RadarView(Context context) {
         this(context, null);
     }
@@ -23,6 +30,9 @@ public class RadarView extends View {
     }
 
     private void init() {
-
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setColor(Color.GRAY);
+        mPaint.setStrokeWidth(2);
     }
 }  
