@@ -1,6 +1,13 @@
 package com.gangganghao.basegraph;
 
+import android.animation.Animator;
+import android.animation.FloatEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -9,6 +16,12 @@ import android.view.View;
  * Date: 2016-11-02 {HOUR}:32
  */
 public class LoadingView extends View {
+
+    private Paint mPaint;
+    private int mViewWidth;
+    private int mViewHeight;
+    private Path mPath;
+    private ValueAnimator mValueAnimator;
 
     public LoadingView(Context context) {
         this(context, null);
@@ -24,6 +37,64 @@ public class LoadingView extends View {
     }
 
     private void init() {
+        mPaint = new Paint();
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.WHITE);
+        mPaint.setStrokeWidth(15);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setAntiAlias(true);
+
+
+        mPath = new Path();
+        mPath.addCircle(0, 0, 200, Path.Direction.CCW);
+
+        mValueAnimator = new ValueAnimator();
+        FloatEvaluator evaluator = new FloatEvaluator();
+//        evaluator.evaluate()
+        mValueAnimator.setEvaluator(evaluator);
+        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                invalidate();
+            }
+        });
+        mValueAnimator.addListener(new Animator.AnimatorListener() {
+                                       @Override
+                                       public void onAnimationStart(Animator animation) {
+                                       }
+
+                                       @Override
+                                       public void onAnimationEnd(Animator animation) {
+                                           mValueAnimator.start();
+                                       }
+
+                                       @Override
+                                       public void onAnimationCancel(Animator animation) {
+
+                                       }
+
+                                       @Override
+                                       public void onAnimationRepeat(Animator animation) {
+
+                                       }
+                                   }
+        );
+        mValueAnimator.start();
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        mViewHeight = h;
+        mViewWidth = w;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        canvas.drawColor(0xff0082D7);
+        canvas.translate(mViewWidth / 2, mViewHeight / 2);
+
 
     }
-}  
+}
