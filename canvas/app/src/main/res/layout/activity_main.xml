@@ -12,7 +12,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gangganghao.basegraph.MainActivity">
 
-    <com.gangganghao.basegraph.SearchView
+    <com.gangganghao.basegraph.LoadingView
         android:id="@+id/pv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

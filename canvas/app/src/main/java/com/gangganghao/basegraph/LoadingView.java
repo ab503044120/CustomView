@@ -1,14 +1,15 @@
 package com.gangganghao.basegraph;
 
 import android.animation.Animator;
-import android.animation.FloatEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -46,15 +47,14 @@ public class LoadingView extends View {
 
 
         mPath = new Path();
-        mPath.addCircle(0, 0, 200, Path.Direction.CCW);
+        mPath.addCircle(0, 0, 100, Path.Direction.CCW);
 
-        mValueAnimator = new ValueAnimator();
-        FloatEvaluator evaluator = new FloatEvaluator();
-//        evaluator.evaluate()
-        mValueAnimator.setEvaluator(evaluator);
+        mValueAnimator = ValueAnimator.ofFloat(0f, 1f).setDuration(2000);
+        mValueAnimator.setRepeatCount(ValueAnimator.INFINITE);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
+
                 invalidate();
             }
         });
@@ -65,7 +65,6 @@ public class LoadingView extends View {
 
                                        @Override
                                        public void onAnimationEnd(Animator animation) {
-                                           mValueAnimator.start();
                                        }
 
                                        @Override
@@ -95,6 +94,17 @@ public class LoadingView extends View {
         canvas.drawColor(0xff0082D7);
         canvas.translate(mViewWidth / 2, mViewHeight / 2);
 
+        float fraction = (float) mValueAnimator.getAnimatedValue();
+        PathMeasure pathMeasure = new PathMeasure(mPath, false);
+        float startD = pathMeasure.getLength() * fraction;
+        float endD = (float) (startD + (0.5f - Math.abs(0.5 - fraction)) * 200f);
+
+        Path dst = new Path();
+        ;
+
+        Log.e("LoadingView", startD + "   " + endD + "   " + pathMeasure.getSegment(startD, endD, dst, true));
+
+        canvas.drawPath(dst, mPaint);
 
     }
 }
