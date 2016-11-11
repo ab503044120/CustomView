@@ -12,7 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.AnticipateOvershootInterpolator;
+import android.view.animation.Interpolator;
 
 /**
  * User: Administrator
@@ -30,8 +30,7 @@ public class ProgressCircle extends View {
     private Paint mPaint;
     private int mWidth;
     private int mHeight;
-    private Path mCircleOutLinePath;
-    private Path mProgressPath;
+
 
     private float mStroke = 30;
     private float mRadius = 400;
@@ -39,18 +38,24 @@ public class ProgressCircle extends View {
     private float arrowLength = mRadius * 1.3f;
     private float arrowLeftRightLenght = arrowLength * 2.0f / 5.0f;
 
-    private float downRange = arrowLength * 0.2f;
 
     private int mBackground = 0xff0082D7;
     private final int mOutlineColor = 0xaaffffff;
     private final int mProgressColor = 0xffffffff;
 
-
     private int progress = 0;
+
+
+    private float downRange = arrowLength * 0.2f;
     private PathMeasure mProgressPathMeasure;
     private RectF mRectF;
-    private Path mArrowPath;
     private Path mMoveArrowPath;
+    private Path mArrowPath;
+    private Path mArrowLeftPath;
+    private Path mArrowRightPath;
+
+    private Path mCircleOutLinePath;
+    private Path mProgressPath;
 
 
     public ProgressCircle(Context context) {
@@ -86,24 +91,67 @@ public class ProgressCircle extends View {
         mArrowPath = new Path();
         mArrowPath.moveTo(mWidth / 2, mHeight / 2 - arrowLength / 2);
         mArrowPath.lineTo(mWidth / 2, mHeight / 2 + arrowLength / 2);
-        mArrowPath.moveTo(mWidth / 2, mHeight / 2 + arrowLength / 2);
-        mArrowPath.lineTo((float) (mWidth / 2 + Math.sin(45 * Math.PI / 180) * arrowLeftRightLenght), (float) (mHeight / 2 + arrowLength / 2 - Math.cos(45 * Math.PI / 180) * arrowLeftRightLenght));
-        mArrowPath.moveTo(mWidth / 2, mHeight / 2 + arrowLength / 2);
-        mArrowPath.lineTo((float) (mWidth / 2 - Math.sin(45 * Math.PI / 180) * arrowLeftRightLenght), (float) (mHeight / 2 + arrowLength / 2 - Math.cos(45 * Math.PI / 180) * arrowLeftRightLenght));
+
+        mArrowRightPath = new Path();
+        mArrowRightPath.moveTo(mWidth / 2, mHeight / 2 + arrowLength / 2);
+        mArrowRightPath.lineTo((float) (mWidth / 2 + Math.sin(45 * Math.PI / 180) * arrowLeftRightLenght), (float) (mHeight / 2 + arrowLength / 2 - Math.cos(45 * Math.PI / 180) * arrowLeftRightLenght));
+
+        mArrowLeftPath = new Path();
+        mArrowLeftPath.moveTo(mWidth / 2, mHeight / 2 + arrowLength / 2);
+        mArrowLeftPath.lineTo((float) (mWidth / 2 - Math.sin(45 * Math.PI / 180) * arrowLeftRightLenght), (float) (mHeight / 2 + arrowLength / 2 - Math.cos(45 * Math.PI / 180) * arrowLeftRightLenght));
+
+        mMoveArrowPath = new Path();
+        mMoveArrowPath.addPath(mArrowPath);
+        mMoveArrowPath.addPath(mArrowRightPath);
+        mMoveArrowPath.addPath(mArrowLeftPath);
 
         startPrepare();
 //        startDowning();
     }
 
     private void startPrepare() {
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1f, 0f);
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1f, -1f);
         valueAnimator.setDuration(2000);
-        valueAnimator.setInterpolator(new AnticipateOvershootInterpolator());
+        valueAnimator.setInterpolator(new Interpolator() {
+            @Override
+            public float getInterpolation(float input) {
+                if (input < 0.66666666) {
+                    return (float) (Math.sin(Math.PI * input)) / 2;
+                } else {
+                    return (float) (2 - Math.sin(Math.PI * input)) / 2;
+                }
+            }
+        });
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                mMoveArrowPath = new Path(mArrowPath);
-                mMoveArrowPath.offset(0, downRange * (float) animation.getAnimatedValue());
+                mMoveArrowPath.reset();
+                float animatedValue = (float) animation.getAnimatedValue();
+                if (animatedValue > 0) {
+                    mMoveArrowPath.addPath(mArrowPath);
+                    mMoveArrowPath.addPath(mArrowRightPath);
+                    mMoveArrowPath.addPath(mArrowLeftPath);
+                    mMoveArrowPath.offset(0, downRange * (float) animation.getAnimatedValue());
+                } else {
+                    float value = Math.abs(animatedValue);
+                    PathMeasure pathMeasure = new PathMeasure(mArrowPath, false);
+                    Path dstMid = new Path();
+                    pathMeasure.getSegment(0, pathMeasure.getLength() - (arrowLength) * value, dstMid, true);
+
+                    pathMeasure.setPath(mArrowLeftPath, false);
+                    Path dstLeft = new Path();
+                    pathMeasure.getSegment((arrowLength) * value, pathMeasure.getLength(), dstLeft, true);
+
+                    pathMeasure.setPath(mArrowRightPath, false);
+                    Path dstRigjt = new Path();
+                    pathMeasure.getSegment((arrowLength) * value, pathMeasure.getLength(), dstRigjt, true);
+
+                    mMoveArrowPath.addPath(dstMid);
+                    mMoveArrowPath.addPath(dstLeft);
+                    mMoveArrowPath.addPath(dstRigjt);
+                }
+
+
                 invalidate();
             }
         });
