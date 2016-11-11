@@ -146,7 +146,7 @@ public class ProgressCircle extends View {
                 pathMeasure.setPath(mErrorLeftPath, false);
                 Path dst = new Path();
                 Float animatedValue = (Float) animation.getAnimatedValue();
-                pathMeasure.getSegment(0, pathMeasure.getLength() * 0.8f * animatedValue, dst, true);
+                pathMeasure.getSegment(0, pathMeasure.getLength() * animatedValue, dst, true);
                 mErrorMovePath.reset();
                 mErrorMovePath.addPath(dst);
                 invalidate();
@@ -163,7 +163,7 @@ public class ProgressCircle extends View {
                 pathMeasure.setPath(mErrorRightPath, false);
                 Path dst = new Path();
                 Float animatedValue = (Float) animation.getAnimatedValue();
-                pathMeasure.getSegment(0, pathMeasure.getLength() * 0.8f * animatedValue, dst, true);
+                pathMeasure.getSegment(0, pathMeasure.getLength() * animatedValue, dst, true);
                 mErrorMovePath.reset();
                 mErrorMovePath.addPath(mErrorLeftPath);
                 mErrorMovePath.addPath(dst);
