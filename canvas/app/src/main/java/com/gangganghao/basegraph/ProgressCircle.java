@@ -2,6 +2,7 @@ package com.gangganghao.basegraph;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,8 +12,9 @@ import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
-import android.view.animation.Interpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
  * User: Administrator
@@ -21,9 +23,9 @@ import android.view.animation.Interpolator;
 public class ProgressCircle extends View {
     private static final int PREPARE = 0;
 
-    private static final int PREPARE2 = 1;
+    private static final int DOWNING = 1;
 
-    private static final int DOWNING = 2;
+    private static final int COMPLETE = 2;
 
     private int currentStatus = 0;
 
@@ -57,6 +59,16 @@ public class ProgressCircle extends View {
     private Path mCircleOutLinePath;
     private Path mProgressPath;
 
+    private ValueAnimator mPrepareAnimator;
+    private ValueAnimator mDowningAnimator;
+
+    private Path mErrorLeftPath;
+    private Path mErrorRightPath;
+    private Path mErrorMovePath;
+    private ValueAnimator mErrorLeftAnimator;
+    private ValueAnimator mErrorRightAnimator;
+    private AnimatorSet mErrorAnimationSet;
+
 
     public ProgressCircle(Context context) {
         this(context, null);
@@ -88,6 +100,7 @@ public class ProgressCircle extends View {
         mProgressPathMeasure = new PathMeasure(mCircleOutLinePath, false);
         mProgressPath = new Path();
 
+        //箭头
         mArrowPath = new Path();
         mArrowPath.moveTo(mWidth / 2, mHeight / 2 - arrowLength / 2);
         mArrowPath.lineTo(mWidth / 2, mHeight / 2 + arrowLength / 2);
@@ -105,24 +118,66 @@ public class ProgressCircle extends View {
         mMoveArrowPath.addPath(mArrowRightPath);
         mMoveArrowPath.addPath(mArrowLeftPath);
 
-        startPrepare();
-//        startDowning();
+        //×
+        mErrorLeftPath = new Path();
+        mErrorLeftPath.moveTo((float) (mWidth / 2f - Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f), (float) (mHeight / 2f - Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f));
+        mErrorLeftPath.lineTo((float) (mWidth / 2f + Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f), (float) (mHeight / 2f + Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f));
+        mErrorRightPath = new Path();
+        mErrorRightPath.moveTo((float) (mWidth / 2f + Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f), (float) (mHeight / 2f - Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f));
+        mErrorRightPath.lineTo((float) (mWidth / 2f - Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f), (float) (mHeight / 2f + Math.sin(45 * Math.PI / 180) * arrowLength * 0.8f * 0.5f));
+        mErrorMovePath = new Path();
+//        mErrorMovePath.addPath(mErrorLeftPath);
+//        mErrorMovePath.addPath(mErrorRightPath);
+
+        initAnimationPrepare();
+        initAnimationDowning();
+        initAnimationError();
     }
 
-    private void startPrepare() {
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1f, -1f);
-        valueAnimator.setDuration(2000);
-        valueAnimator.setInterpolator(new Interpolator() {
+    private void initAnimationError() {
+        mErrorAnimationSet = new AnimatorSet();
+        mErrorAnimationSet.setDuration(400);
+        mErrorLeftAnimator = ValueAnimator.ofFloat(0, 1f);
+        mErrorLeftAnimator.setDuration(200);
+        mErrorLeftAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
-            public float getInterpolation(float input) {
-                if (input < 0.66666666) {
-                    return (float) (Math.sin(Math.PI * input)) / 2;
-                } else {
-                    return (float) (2 - Math.sin(Math.PI * input)) / 2;
-                }
+            public void onAnimationUpdate(ValueAnimator animation) {
+                PathMeasure pathMeasure = new PathMeasure();
+                pathMeasure.setPath(mErrorLeftPath, false);
+                Path dst = new Path();
+                Float animatedValue = (Float) animation.getAnimatedValue();
+                pathMeasure.getSegment(0, pathMeasure.getLength() * 0.8f * animatedValue, dst, true);
+                mErrorMovePath.reset();
+                mErrorMovePath.addPath(dst);
+                invalidate();
             }
         });
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mErrorAnimationSet.play(mErrorLeftAnimator);
+
+        mErrorRightAnimator = ValueAnimator.ofFloat(0, 1f);
+        mErrorRightAnimator.setDuration(200);
+        mErrorRightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                PathMeasure pathMeasure = new PathMeasure();
+                pathMeasure.setPath(mErrorRightPath, false);
+                Path dst = new Path();
+                Float animatedValue = (Float) animation.getAnimatedValue();
+                pathMeasure.getSegment(0, pathMeasure.getLength() * 0.8f * animatedValue, dst, true);
+                mErrorMovePath.reset();
+                mErrorMovePath.addPath(mErrorLeftPath);
+                mErrorMovePath.addPath(dst);
+                invalidate();
+            }
+        });
+        mErrorAnimationSet.play(mErrorRightAnimator).after(mErrorLeftAnimator);
+    }
+
+    public void initAnimationPrepare() {
+        mPrepareAnimator = ValueAnimator.ofFloat(0, 1f, -1f);
+        mPrepareAnimator.setDuration(2000);
+        mPrepareAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        mPrepareAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mMoveArrowPath.reset();
@@ -150,37 +205,38 @@ public class ProgressCircle extends View {
                     mMoveArrowPath.addPath(dstLeft);
                     mMoveArrowPath.addPath(dstRigjt);
                 }
-
-
                 invalidate();
             }
         });
-        valueAnimator.addListener(new AnimatorListenerAdapter() {
+        mPrepareAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
+                currentStatus = DOWNING;
+                mDowningAnimator.start();
             }
         });
-        valueAnimator.start();
     }
 
-    private void startDowning() {
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1f);
-        valueAnimator.setDuration(5000);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    private void initAnimationDowning() {
+        mDowningAnimator = ValueAnimator.ofFloat(0, 1f);
+        mDowningAnimator.setDuration(5000);
+        mDowningAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 progress = (int) ((float) animation.getAnimatedValue() * 100.0f);
                 invalidate();
             }
         });
-        valueAnimator.addListener(new AnimatorListenerAdapter() {
+        mDowningAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
+                currentStatus = COMPLETE;
+                mErrorAnimationSet.start();
             }
+
         });
-        valueAnimator.start();
 
 
     }
@@ -204,24 +260,26 @@ public class ProgressCircle extends View {
             case PREPARE:
                 drawPrepare(canvas);
                 break;
-            case PREPARE2:
-                drawPrepare2(canvas);
-                break;
             case DOWNING:
                 drawDowning(canvas);
+                break;
+            case COMPLETE:
+                drawProgress(canvas);
+                drawComplete(canvas);
                 break;
         }
     }
 
-    private void drawPrepare2(Canvas canvas) {
+    private void drawComplete(Canvas canvas) {
         mPaint.reset();
         mPaint.setAntiAlias(true);
         mPaint.setColor(mProgressColor);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(mArrowStroke);
+        mPaint.setStrokeWidth(mStroke);
+        Log.e("draw",new PathMeasure(mErrorMovePath,false).getLength() + "....");
+        canvas.drawPath(mErrorMovePath, mPaint);
 
-        canvas.drawPath(mArrowPath, mPaint);
     }
 
     private void drawPrepare(Canvas canvas) {
@@ -277,4 +335,25 @@ public class ProgressCircle extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         canvas.drawPath(mCircleOutLinePath, mPaint);
     }
+
+    public void start() {
+        currentStatus = PREPARE;
+        mPrepareAnimator.start();
+    }
+//    new Interpolator() {
+//        @Override
+//        public float getInterpolation(float input) {
+//            float result;
+//            if (input < 0.66666666f) {
+//                result = (float) (Math.sin(Math.PI * input*(0.5f/0.66666666f)))/ 2;
+//                Log.e("value","Value : "+ result);
+//                return result;
+//            } else {
+//                result = (float) (2 - Math.sin(Math.PI * (0.5f+(input-0.66666666f)*(0.5/(1-0.66666666f))))) / 2;
+//                Log.e("value","Value : "+ result);
+//
+//                return result;
+//            }
+//        }
+//    }
 }
