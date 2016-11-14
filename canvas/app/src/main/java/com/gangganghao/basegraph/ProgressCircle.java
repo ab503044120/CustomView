@@ -35,10 +35,11 @@ public class ProgressCircle extends View {
 
 
     private float mStroke = 30;
-    private float mRadius = 400;
+    private float mRadius = mWidth * 1.0f / 3.0f;
     private float mArrowStroke = mStroke * 0.7f;
     private float arrowLength = mRadius * 1.3f;
     private float arrowLeftRightLenght = arrowLength * 2.0f / 5.0f;
+    private float mTextSize = mWidth * 1.0f / 3.0f;
 
 
     private int mBackground = 0xff0082D7;
@@ -88,6 +89,14 @@ public class ProgressCircle extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mWidth = MeasureSpec.getSize(widthMeasureSpec);
         mHeight = MeasureSpec.getSize(heightMeasureSpec);
+        mStroke = mWidth * 1.0f / 30.0f;
+        mRadius = mWidth * 1.0f / 3.0f;
+        mArrowStroke = mStroke * 0.7f;
+        arrowLength = mRadius * 1.3f;
+        arrowLeftRightLenght = arrowLength * 2.0f / 5.0f;
+        downRange = arrowLength * 0.2f;
+        mTextSize = mWidth * 1.0f / 4.0f;
+
         initPath();
     }
 
@@ -136,9 +145,9 @@ public class ProgressCircle extends View {
 
     private void initAnimationError() {
         mErrorAnimationSet = new AnimatorSet();
-        mErrorAnimationSet.setDuration(400);
+        mErrorAnimationSet.setDuration(100);
         mErrorLeftAnimator = ValueAnimator.ofFloat(0, 1f);
-        mErrorLeftAnimator.setDuration(200);
+        mErrorLeftAnimator.setDuration(50);
         mErrorLeftAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -155,7 +164,7 @@ public class ProgressCircle extends View {
         mErrorAnimationSet.play(mErrorLeftAnimator);
 
         mErrorRightAnimator = ValueAnimator.ofFloat(0, 1f);
-        mErrorRightAnimator.setDuration(200);
+        mErrorRightAnimator.setDuration(50);
         mErrorRightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -255,6 +264,7 @@ public class ProgressCircle extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        canvas.drawColor(mBackground);
         drawOutline(canvas);
         switch (currentStatus) {
             case PREPARE:
@@ -277,7 +287,7 @@ public class ProgressCircle extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         mPaint.setStrokeWidth(mStroke);
-        Log.e("draw",new PathMeasure(mErrorMovePath,false).getLength() + "....");
+        Log.e("draw", new PathMeasure(mErrorMovePath, false).getLength() + "....");
         canvas.drawPath(mErrorMovePath, mPaint);
 
     }
@@ -305,7 +315,7 @@ public class ProgressCircle extends View {
         mPaint.setAntiAlias(true);
         mPaint.setColor(mProgressColor);
         mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setTextSize(200);
+        mPaint.setTextSize(mTextSize);
         mPaint.setTextAlign(Paint.Align.CENTER);
         String text = progress + "%";
         Rect bounds = new Rect();
