@@ -1,12 +1,12 @@
 package org.huihui.photoview;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
@@ -112,6 +112,7 @@ public class PhotoView extends ImageView {
                  */
                     if (currentMove > 10F) {
                         float scale = currentMove / preMove;
+                        Log.e("spacing", "距离: " + currentMove + "  倍数:" + scale);
                         currentMatrix.postScale(scale, scale, mid.x, mid.y);
                     }
                 /*
@@ -151,7 +152,7 @@ public class PhotoView extends ImageView {
     /**
      * 计算旋转角度
      *
-     * @param 事件对象
+     * @param event
      * @return 角度值
      */
     private float calRotation(MotionEvent event) {
