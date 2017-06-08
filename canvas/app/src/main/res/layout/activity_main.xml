@@ -13,11 +13,11 @@
     tools:context="com.gangganghao.basegraph.MainActivity">
 
     <!--<com.gangganghao.basegraph.ProgressCircle-->
-        <!--android:id="@+id/pv"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-       <!--/>-->
-    <com.gangganghao.basegraph.RevealView
+    <!--android:id="@+id/pv"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--/>-->
+    <com.gangganghao.basegraph.SearchViewV2
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </RelativeLayout>
