@@ -47,8 +47,8 @@ public class SearchViewV2 extends View {
         mPaint.setStrokeWidth(5);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
         setLayerType(LAYER_TYPE_HARDWARE, null);
-        mValueAnimator = new ValueAnimator();
-        mValueAnimator.ofFloat(0, 100f).setDuration(800).addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mValueAnimator = ValueAnimator.ofFloat(0, 100f);
+        mValueAnimator.setDuration(800).addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 progress = (float) animation.getAnimatedValue();
