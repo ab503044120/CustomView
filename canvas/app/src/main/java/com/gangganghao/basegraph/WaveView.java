@@ -1,5 +1,6 @@
 package com.gangganghao.basegraph;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,6 +9,8 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -21,6 +24,7 @@ public class WaveView extends View {
     private int mYOffset = 100;
     private int mXOffset;
     private PorterDuffXfermode mXfermode;
+    private ValueAnimator mValueAnimator;
 
     public WaveView(Context context) {
         this(context, null);
@@ -39,9 +43,17 @@ public class WaveView extends View {
         mPath = new Path();
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setColor(Color.BLUE);
-//        mPaint.setStyle(Paint.Style.FILL);
         setLayerType(LAYER_TYPE_HARDWARE, null);
         mXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
+        mValueAnimator = ValueAnimator.ofFloat(0, 1.0f);
+        mValueAnimator.setDuration(20000);
+        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mYOffset = (int) (500* ((float) animation.getAnimatedValue()));
+                invalidate();
+            }
+        });
     }
 
     @Override
@@ -54,6 +66,7 @@ public class WaveView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+//        canvas.drawColor(Color.TRANSPARENT);
         int layer = canvas.saveLayer(0, 0, getMeasuredWidth(), getMeasuredHeight(), mPaint, Canvas.ALL_SAVE_FLAG);
         mPaint.setXfermode(null);
         mPaint.setColor(Color.WHITE);
@@ -66,12 +79,17 @@ public class WaveView extends View {
         mPath.moveTo(startX, startY);
         mPath.rQuadTo(mRadio / 2, -mRadio / 2, mRadio, 0);
         mPath.rQuadTo(mRadio / 2, mRadio / 2, mRadio, 0);
-        mPath.moveTo(startX, startY);
         mPath.rLineTo(0, mRadio * 2.5f);
-        mPath.rLineTo(mRadio * 2, 0);
-        mPath.rLineTo(0, -mRadio * 2.5f);
+        mPath.rLineTo(-mRadio * 2, 0);
+        mPath.close();
         canvas.drawPath(mPath, mPaint);
+        Log.e("layer",layer + "-------");
         canvas.restoreToCount(layer);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mValueAnimator.start();
+        return super.onTouchEvent(event);
+    }
 }
