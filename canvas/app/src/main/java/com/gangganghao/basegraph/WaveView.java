@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
  * Created by Administrator on 2017/6/12.
@@ -46,11 +47,13 @@ public class WaveView extends View {
         setLayerType(LAYER_TYPE_HARDWARE, null);
         mXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
         mValueAnimator = ValueAnimator.ofFloat(0, 1.0f);
-        mValueAnimator.setDuration(20000);
+        mValueAnimator.setDuration(4000);
+        mValueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                mYOffset = (int) (500* ((float) animation.getAnimatedValue()));
+                mYOffset = (int) (550 * ((float) animation.getAnimatedValue()));
+                mXOffset = (int) (mRadio * 2 * (1-(float) animation.getAnimatedValue()));
                 invalidate();
             }
         });
@@ -66,8 +69,7 @@ public class WaveView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        canvas.drawColor(Color.TRANSPARENT);
-        int layer = canvas.saveLayer(0, 0, getMeasuredWidth(), getMeasuredHeight(), mPaint, Canvas.ALL_SAVE_FLAG);
+        int layer = canvas.saveLayer(0, 0, getMeasuredWidth(), getMeasuredHeight(), null, Canvas.ALL_SAVE_FLAG);
         mPaint.setXfermode(null);
         mPaint.setColor(Color.WHITE);
         canvas.drawCircle(getMeasuredWidth() / 2, getMeasuredHeight() / 2, mRadio, mPaint);
@@ -75,15 +77,17 @@ public class WaveView extends View {
         mPaint.setXfermode(mXfermode);
         mPath.reset();
         float startY = -mYOffset + getMeasuredHeight() / 2 + mRadio;
-        float startX = getMeasuredWidth() / 2 - mRadio;
+        float startX = -mXOffset + getMeasuredWidth() / 2 - mRadio;
         mPath.moveTo(startX, startY);
-        mPath.rQuadTo(mRadio / 2, -mRadio / 2, mRadio, 0);
-        mPath.rQuadTo(mRadio / 2, mRadio / 2, mRadio, 0);
+        mPath.rQuadTo(mRadio / 2, -mRadio / 4, mRadio, 0);
+        mPath.rQuadTo(mRadio / 2, mRadio / 4, mRadio, 0);
+        mPath.rQuadTo(mRadio / 2, -mRadio / 4, mRadio, 0);
+        mPath.rQuadTo(mRadio / 2, mRadio / 4, mRadio, 0);
         mPath.rLineTo(0, mRadio * 2.5f);
-        mPath.rLineTo(-mRadio * 2, 0);
+        mPath.rLineTo(-mRadio * 4, 0);
         mPath.close();
         canvas.drawPath(mPath, mPaint);
-        Log.e("layer",layer + "-------");
+        Log.e("layer", layer + "-------");
         canvas.restoreToCount(layer);
     }
 
