@@ -1,9 +1,5 @@
 package cn.org.octopus.wheelview.widget;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import cn.org.octopus.wheelview.R;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,6 +20,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import cn.org.octopus.wheelview.R;
 
 /**
  * WheelView 主对象
@@ -894,7 +895,7 @@ public class WheelView extends View {
      */
     private void drawValue(Canvas canvas) {
         valuePaint.setColor(VALUE_TEXT_COLOR);
-        
+        valuePaint.setTextSize(30);
         //将当前 View 状态属性值 转为整型集合, 赋值给 普通条目布局的绘制属性
         valuePaint.drawableState = getDrawableState();
 
@@ -1258,7 +1259,7 @@ public class WheelView extends View {
     /**
      * 滚动 WheelView
      * 
-     * @param itemsToSkip
+     * @param itemsToScroll
      *            滚动的元素个数
      * @param time
      *            每次滚动的间隔
