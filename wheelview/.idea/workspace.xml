@@ -36,9 +36,12 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="488">
+            <state relative-caret-position="18">
               <caret line="96" column="13" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="17" />
-              <folding />
+              <folding>
+                <element signature="e#3962#4313#0" expanded="true" />
+                <element signature="e#4312#4313#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -46,8 +49,8 @@
       <file leaf-file-name="WheelView.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/WheelView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-532">
-              <caret line="840" column="19" selection-start-line="840" selection-start-column="19" selection-end-line="840" selection-end-column="19" />
+            <state relative-caret-position="1944">
+              <caret line="1253" column="19" selection-start-line="1253" selection-start-column="19" selection-end-line="1253" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -56,7 +59,7 @@
       <file leaf-file-name="WheelAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/WheelAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-70">
+            <state relative-caret-position="126">
               <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
               <folding />
             </state>
@@ -66,9 +69,28 @@
       <file leaf-file-name="StaticLayout.java" pinned="false" current-in-tab="false">
         <entry file="file://E:/sdk/sources/android-19/android/text/StaticLayout.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="166">
+            <state relative-caret-position="360">
               <caret line="43" column="31" selection-start-line="43" selection-start-column="31" selection-end-line="43" selection-end-column="31" />
-              <folding />
+              <folding>
+                <element signature="e#0#37726#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#34111#34112#0" expanded="false" />
+                <element signature="e#34144#34145#0" expanded="false" />
+                <element signature="e#34828#34829#0" expanded="false" />
+                <element signature="e#34895#34896#0" expanded="false" />
+                <element signature="e#35232#35233#0" expanded="false" />
+                <element signature="e#35276#35277#0" expanded="false" />
+                <element signature="e#35324#35325#0" expanded="false" />
+                <element signature="e#35358#35359#0" expanded="false" />
+                <element signature="e#35409#35410#0" expanded="false" />
+                <element signature="e#35446#35447#0" expanded="false" />
+                <element signature="e#35897#35898#0" expanded="false" />
+                <element signature="e#35936#35937#0" expanded="false" />
+                <element signature="e#35958#35959#0" expanded="false" />
+                <element signature="e#36007#36008#0" expanded="false" />
+                <element signature="e#36032#36033#0" expanded="false" />
+                <element signature="e#36091#36092#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -81,6 +103,8 @@
               <folding>
                 <element signature="e#0#69910#0" expanded="false" />
                 <element signature="imports" expanded="false" />
+                <element signature="e#6391#6392#0" expanded="false" />
+                <element signature="e#6429#6430#0" expanded="false" />
                 <element signature="e#21432#21433#0" expanded="false" />
                 <element signature="e#21460#21461#0" expanded="false" />
                 <element signature="e#21664#21665#0" expanded="false" />
@@ -141,9 +165,14 @@
       <file leaf-file-name="NumericWheelAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/NumericWheelAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-990">
+            <state relative-caret-position="90">
               <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-              <folding />
+              <folding>
+                <element signature="e#508#509#0" expanded="false" />
+                <element signature="e#566#567#0" expanded="false" />
+                <element signature="e#754#755#0" expanded="false" />
+                <element signature="e#800#801#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -151,9 +180,12 @@
       <file leaf-file-name="ArrayWheelAdapter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/ArrayWheelAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-556">
+            <state relative-caret-position="144">
               <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-              <folding />
+              <folding>
+                <element signature="e#741#742#0" expanded="false" />
+                <element signature="e#784#785#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -161,9 +193,32 @@
       <file leaf-file-name="Scroller.java" pinned="false" current-in-tab="false">
         <entry file="file://E:/sdk/sources/android-19/android/widget/Scroller.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="386">
+            <state relative-caret-position="9486">
               <caret line="567" column="6" selection-start-line="567" selection-start-column="6" selection-end-line="567" selection-end-column="6" />
-              <folding />
+              <folding>
+                <element signature="e#0#20312#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#5727#5728#0" expanded="false" />
+                <element signature="e#5762#5763#0" expanded="false" />
+                <element signature="e#7776#7777#0" expanded="false" />
+                <element signature="e#7808#7809#0" expanded="false" />
+                <element signature="e#7996#7997#0" expanded="false" />
+                <element signature="e#8032#8033#0" expanded="false" />
+                <element signature="e#8226#8227#0" expanded="false" />
+                <element signature="e#8258#8259#0" expanded="false" />
+                <element signature="e#8446#8447#0" expanded="false" />
+                <element signature="e#8475#8476#0" expanded="false" />
+                <element signature="e#8663#8664#0" expanded="false" />
+                <element signature="e#8692#8693#0" expanded="false" />
+                <element signature="e#9197#9198#0" expanded="false" />
+                <element signature="e#9227#9228#0" expanded="false" />
+                <element signature="e#9416#9417#0" expanded="false" />
+                <element signature="e#9446#9447#0" expanded="false" />
+                <element signature="e#9659#9660#0" expanded="false" />
+                <element signature="e#9689#9690#0" expanded="false" />
+                <element signature="e#9902#9903#0" expanded="false" />
+                <element signature="e#9932#9933#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -1845,6 +1900,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane />
       </pane>
@@ -1987,8 +2044,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2323,7 +2378,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40807176" sideWeight="0.49786323" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2174888" sideWeight="0.35576922" order="12" side_tool="false" content_ui="tabs" />
@@ -2426,11 +2481,182 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1728">
+          <caret line="96" column="13" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="17" />
+          <folding>
+            <element signature="e#3962#4313#0" expanded="true" />
+            <element signature="e#4312#4313#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/WheelView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15120">
+          <caret line="840" column="19" selection-start-line="840" selection-start-column="19" selection-end-line="840" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/WheelAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://E:/sdk/sources/android-19/android/text/StaticLayout.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="43" column="31" selection-start-line="43" selection-start-column="31" selection-end-line="43" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#37726#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#34111#34112#0" expanded="false" />
+            <element signature="e#34144#34145#0" expanded="false" />
+            <element signature="e#34828#34829#0" expanded="false" />
+            <element signature="e#34895#34896#0" expanded="false" />
+            <element signature="e#35232#35233#0" expanded="false" />
+            <element signature="e#35276#35277#0" expanded="false" />
+            <element signature="e#35324#35325#0" expanded="false" />
+            <element signature="e#35358#35359#0" expanded="false" />
+            <element signature="e#35409#35410#0" expanded="false" />
+            <element signature="e#35446#35447#0" expanded="false" />
+            <element signature="e#35897#35898#0" expanded="false" />
+            <element signature="e#35936#35937#0" expanded="false" />
+            <element signature="e#35958#35959#0" expanded="false" />
+            <element signature="e#36007#36008#0" expanded="false" />
+            <element signature="e#36032#36033#0" expanded="false" />
+            <element signature="e#36091#36092#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://E:/sdk/sources/android-19/android/text/Layout.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3276">
+          <caret line="182" column="9" selection-start-line="182" selection-start-column="9" selection-end-line="182" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#69910#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#6391#6392#0" expanded="false" />
+            <element signature="e#6429#6430#0" expanded="false" />
+            <element signature="e#21432#21433#0" expanded="false" />
+            <element signature="e#21460#21461#0" expanded="false" />
+            <element signature="e#21664#21665#0" expanded="false" />
+            <element signature="e#21693#21694#0" expanded="false" />
+            <element signature="e#21784#21785#0" expanded="false" />
+            <element signature="e#21813#21814#0" expanded="false" />
+            <element signature="e#21994#21995#0" expanded="false" />
+            <element signature="e#22023#22024#0" expanded="false" />
+            <element signature="e#22535#22536#0" expanded="false" />
+            <element signature="e#22584#22585#0" expanded="false" />
+            <element signature="e#22694#22695#0" expanded="false" />
+            <element signature="e#22727#22728#0" expanded="false" />
+            <element signature="e#22868#22869#0" expanded="false" />
+            <element signature="e#22903#22904#0" expanded="false" />
+            <element signature="e#23035#23036#0" expanded="false" />
+            <element signature="e#23069#23070#0" expanded="false" />
+            <element signature="e#23241#23242#0" expanded="false" />
+            <element signature="e#23272#23273#0" expanded="false" />
+            <element signature="e#42020#42021#0" expanded="false" />
+            <element signature="e#42065#42066#0" expanded="false" />
+            <element signature="e#42944#42945#0" expanded="false" />
+            <element signature="e#42987#42988#0" expanded="false" />
+            <element signature="e#43650#43651#0" expanded="false" />
+            <element signature="e#43709#43710#0" expanded="false" />
+            <element signature="e#43758#43759#0" expanded="false" />
+            <element signature="e#43818#43819#0" expanded="false" />
+            <element signature="e#58200#58201#0" expanded="false" />
+            <element signature="e#58247#58248#0" expanded="false" />
+            <element signature="e#61337#61338#0" expanded="false" />
+            <element signature="e#61372#61373#0" expanded="false" />
+            <element signature="e#65026#65027#0" expanded="false" />
+            <element signature="e#65068#65069#0" expanded="false" />
+            <element signature="e#65802#65803#0" expanded="false" />
+            <element signature="e#65835#65836#0" expanded="false" />
+            <element signature="e#66504#66505#0" expanded="false" />
+            <element signature="e#66549#66550#0" expanded="false" />
+            <element signature="e#67376#67377#0" expanded="false" />
+            <element signature="e#67433#67434#0" expanded="false" />
+            <element signature="e#67478#67479#0" expanded="false" />
+            <element signature="e#67533#67534#0" expanded="false" />
+            <element signature="e#67580#67581#0" expanded="false" />
+            <element signature="e#67637#67638#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/OnWheelChangedListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="17" selection-start-line="5" selection-start-column="17" selection-end-line="5" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/NumericWheelAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding>
+            <element signature="e#508#509#0" expanded="false" />
+            <element signature="e#566#567#0" expanded="false" />
+            <element signature="e#754#755#0" expanded="false" />
+            <element signature="e#800#801#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/ArrayWheelAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <folding>
+            <element signature="e#741#742#0" expanded="false" />
+            <element signature="e#784#785#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://E:/sdk/sources/android-19/android/widget/Scroller.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9486">
+          <caret line="567" column="6" selection-start-line="567" selection-start-column="6" selection-end-line="567" selection-end-column="6" />
+          <folding>
+            <element signature="e#0#20312#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#5727#5728#0" expanded="false" />
+            <element signature="e#5762#5763#0" expanded="false" />
+            <element signature="e#7776#7777#0" expanded="false" />
+            <element signature="e#7808#7809#0" expanded="false" />
+            <element signature="e#7996#7997#0" expanded="false" />
+            <element signature="e#8032#8033#0" expanded="false" />
+            <element signature="e#8226#8227#0" expanded="false" />
+            <element signature="e#8258#8259#0" expanded="false" />
+            <element signature="e#8446#8447#0" expanded="false" />
+            <element signature="e#8475#8476#0" expanded="false" />
+            <element signature="e#8663#8664#0" expanded="false" />
+            <element signature="e#8692#8693#0" expanded="false" />
+            <element signature="e#9197#9198#0" expanded="false" />
+            <element signature="e#9227#9228#0" expanded="false" />
+            <element signature="e#9416#9417#0" expanded="false" />
+            <element signature="e#9446#9447#0" expanded="false" />
+            <element signature="e#9659#9660#0" expanded="false" />
+            <element signature="e#9689#9690#0" expanded="false" />
+            <element signature="e#9902#9903#0" expanded="false" />
+            <element signature="e#9932#9933#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/import-summary.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2438,7 +2664,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1368">
           <caret line="96" column="13" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="17" />
-          <folding />
+          <folding>
+            <element signature="e#3962#4313#0" expanded="true" />
+            <element signature="e#4312#4313#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2476,7 +2705,26 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
           <caret line="39" column="38" selection-start-line="39" selection-start-column="38" selection-end-line="39" selection-end-column="38" />
-          <folding />
+          <folding>
+            <element signature="e#0#37726#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#34111#34112#0" expanded="false" />
+            <element signature="e#34144#34145#0" expanded="false" />
+            <element signature="e#34828#34829#0" expanded="false" />
+            <element signature="e#34895#34896#0" expanded="false" />
+            <element signature="e#35232#35233#0" expanded="false" />
+            <element signature="e#35276#35277#0" expanded="false" />
+            <element signature="e#35324#35325#0" expanded="false" />
+            <element signature="e#35358#35359#0" expanded="false" />
+            <element signature="e#35409#35410#0" expanded="false" />
+            <element signature="e#35446#35447#0" expanded="false" />
+            <element signature="e#35897#35898#0" expanded="false" />
+            <element signature="e#35936#35937#0" expanded="false" />
+            <element signature="e#35958#35959#0" expanded="false" />
+            <element signature="e#36007#36008#0" expanded="false" />
+            <element signature="e#36032#36033#0" expanded="false" />
+            <element signature="e#36091#36092#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2487,6 +2735,8 @@
           <folding>
             <element signature="e#0#69910#0" expanded="false" />
             <element signature="imports" expanded="false" />
+            <element signature="e#6391#6392#0" expanded="false" />
+            <element signature="e#6429#6430#0" expanded="false" />
             <element signature="e#21432#21433#0" expanded="false" />
             <element signature="e#21460#21461#0" expanded="false" />
             <element signature="e#21664#21665#0" expanded="false" />
@@ -2537,7 +2787,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2545,7 +2794,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1368">
           <caret line="96" column="13" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="17" />
-          <folding />
+          <folding>
+            <element signature="e#3962#4313#0" expanded="true" />
+            <element signature="e#4312#4313#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2583,7 +2835,26 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="288">
           <caret line="39" column="38" selection-start-line="39" selection-start-column="38" selection-end-line="39" selection-end-column="38" />
-          <folding />
+          <folding>
+            <element signature="e#0#37726#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#34111#34112#0" expanded="false" />
+            <element signature="e#34144#34145#0" expanded="false" />
+            <element signature="e#34828#34829#0" expanded="false" />
+            <element signature="e#34895#34896#0" expanded="false" />
+            <element signature="e#35232#35233#0" expanded="false" />
+            <element signature="e#35276#35277#0" expanded="false" />
+            <element signature="e#35324#35325#0" expanded="false" />
+            <element signature="e#35358#35359#0" expanded="false" />
+            <element signature="e#35409#35410#0" expanded="false" />
+            <element signature="e#35446#35447#0" expanded="false" />
+            <element signature="e#35897#35898#0" expanded="false" />
+            <element signature="e#35936#35937#0" expanded="false" />
+            <element signature="e#35958#35959#0" expanded="false" />
+            <element signature="e#36007#36008#0" expanded="false" />
+            <element signature="e#36032#36033#0" expanded="false" />
+            <element signature="e#36091#36092#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2594,6 +2865,8 @@
           <folding>
             <element signature="e#0#69910#0" expanded="false" />
             <element signature="imports" expanded="false" />
+            <element signature="e#6391#6392#0" expanded="false" />
+            <element signature="e#6429#6430#0" expanded="false" />
             <element signature="e#21432#21433#0" expanded="false" />
             <element signature="e#21460#21461#0" expanded="false" />
             <element signature="e#21664#21665#0" expanded="false" />
@@ -2644,7 +2917,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2669,6 +2941,8 @@
           <folding>
             <element signature="e#0#69910#0" expanded="false" />
             <element signature="imports" expanded="false" />
+            <element signature="e#6391#6392#0" expanded="false" />
+            <element signature="e#6429#6430#0" expanded="false" />
             <element signature="e#21432#21433#0" expanded="false" />
             <element signature="e#21460#21461#0" expanded="false" />
             <element signature="e#21664#21665#0" expanded="false" />
@@ -2715,27 +2989,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="488">
-          <caret line="96" column="13" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/ArrayWheelAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-556">
+        <state relative-caret-position="144">
           <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="e#741#742#0" expanded="false" />
+            <element signature="e#784#785#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/NumericWheelAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-990">
+        <state relative-caret-position="90">
           <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-          <folding />
+          <folding>
+            <element signature="e#508#509#0" expanded="false" />
+            <element signature="e#566#567#0" expanded="false" />
+            <element signature="e#754#755#0" expanded="false" />
+            <element signature="e#800#801#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2749,7 +3023,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/WheelAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-70">
+        <state relative-caret-position="126">
           <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
           <folding />
         </state>
@@ -2757,9 +3031,28 @@
     </entry>
     <entry file="file://E:/sdk/sources/android-19/android/text/StaticLayout.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
+        <state relative-caret-position="360">
           <caret line="43" column="31" selection-start-line="43" selection-start-column="31" selection-end-line="43" selection-end-column="31" />
-          <folding />
+          <folding>
+            <element signature="e#0#37726#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#34111#34112#0" expanded="false" />
+            <element signature="e#34144#34145#0" expanded="false" />
+            <element signature="e#34828#34829#0" expanded="false" />
+            <element signature="e#34895#34896#0" expanded="false" />
+            <element signature="e#35232#35233#0" expanded="false" />
+            <element signature="e#35276#35277#0" expanded="false" />
+            <element signature="e#35324#35325#0" expanded="false" />
+            <element signature="e#35358#35359#0" expanded="false" />
+            <element signature="e#35409#35410#0" expanded="false" />
+            <element signature="e#35446#35447#0" expanded="false" />
+            <element signature="e#35897#35898#0" expanded="false" />
+            <element signature="e#35936#35937#0" expanded="false" />
+            <element signature="e#35958#35959#0" expanded="false" />
+            <element signature="e#36007#36008#0" expanded="false" />
+            <element signature="e#36032#36033#0" expanded="false" />
+            <element signature="e#36091#36092#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2775,16 +3068,50 @@
     </entry>
     <entry file="file://E:/sdk/sources/android-19/android/widget/Scroller.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="386">
+        <state relative-caret-position="9486">
           <caret line="567" column="6" selection-start-line="567" selection-start-column="6" selection-end-line="567" selection-end-column="6" />
-          <folding />
+          <folding>
+            <element signature="e#0#20312#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#5727#5728#0" expanded="false" />
+            <element signature="e#5762#5763#0" expanded="false" />
+            <element signature="e#7776#7777#0" expanded="false" />
+            <element signature="e#7808#7809#0" expanded="false" />
+            <element signature="e#7996#7997#0" expanded="false" />
+            <element signature="e#8032#8033#0" expanded="false" />
+            <element signature="e#8226#8227#0" expanded="false" />
+            <element signature="e#8258#8259#0" expanded="false" />
+            <element signature="e#8446#8447#0" expanded="false" />
+            <element signature="e#8475#8476#0" expanded="false" />
+            <element signature="e#8663#8664#0" expanded="false" />
+            <element signature="e#8692#8693#0" expanded="false" />
+            <element signature="e#9197#9198#0" expanded="false" />
+            <element signature="e#9227#9228#0" expanded="false" />
+            <element signature="e#9416#9417#0" expanded="false" />
+            <element signature="e#9446#9447#0" expanded="false" />
+            <element signature="e#9659#9660#0" expanded="false" />
+            <element signature="e#9689#9690#0" expanded="false" />
+            <element signature="e#9902#9903#0" expanded="false" />
+            <element signature="e#9932#9933#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="96" column="13" selection-start-line="96" selection-start-column="8" selection-end-line="96" selection-end-column="17" />
+          <folding>
+            <element signature="e#3962#4313#0" expanded="true" />
+            <element signature="e#4312#4313#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/cn/org/octopus/wheelview/widget/WheelView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-532">
-          <caret line="840" column="19" selection-start-line="840" selection-start-column="19" selection-end-line="840" selection-end-column="19" />
+        <state relative-caret-position="1944">
+          <caret line="1253" column="19" selection-start-line="1253" selection-start-column="19" selection-end-line="1253" selection-end-column="19" />
           <folding />
         </state>
       </provider>
