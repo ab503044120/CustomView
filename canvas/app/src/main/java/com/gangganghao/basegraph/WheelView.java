@@ -1,5 +1,6 @@
 package com.gangganghao.basegraph;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,8 +9,12 @@ import android.graphics.PointF;
 import android.text.StaticLayout;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.Scroller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +25,7 @@ import java.util.List;
 
 public class WheelView extends View {
 
+    private static final String TAG = "WheelView";
     private int textSize = 50;
     private int centerTextColor = 0xff333333;
     private int otherTextColor = 0xff999999;
@@ -35,12 +41,18 @@ public class WheelView extends View {
     private float mOtherTextOffset;
     //文字开始画的y值
     private float startY;
+    private float moveDistance;
     private int mCenterTextHeight;
     private ValueAnimator mValueAnimator;
     //当前被选中的index
     private int curentIndex;
 
     private int mVisibleItem;
+    private Scroller mScroller;
+    private SimpleOnGestureListener mListener;
+    private GestureDetector mGestureDetector;
+    private float lastFlingDistance;
+    private boolean isFling;
 
     public WheelView(Context context) {
         this(context, null);
@@ -54,6 +66,26 @@ public class WheelView extends View {
         super(context, attrs, defStyle);
         init();
         mStrings = new ArrayList<>();
+        mStrings.add("湖南");
+        mStrings.add("北京");
+        mStrings.add("乌鲁木齐");
+        mStrings.add("新疆维吾尔自治区");
+        mStrings.add("西藏");
+        mStrings.add("阿里巴巴");
+        mStrings.add("腾讯");
+        mStrings.add("宁夏回族自治区");
+        mStrings.add("这是一个超长的东西啊啊啊啊啊啊啊");
+
+        mStrings.add("湖南");
+        mStrings.add("北京");
+        mStrings.add("乌鲁木齐");
+        mStrings.add("新疆维吾尔自治区");
+        mStrings.add("西藏");
+        mStrings.add("阿里巴巴");
+        mStrings.add("腾讯");
+        mStrings.add("宁夏回族自治区");
+        mStrings.add("这是一个超长的东西啊啊啊啊啊啊啊");
+
         mStrings.add("湖南");
         mStrings.add("北京");
         mStrings.add("乌鲁木齐");
@@ -77,15 +109,44 @@ public class WheelView extends View {
         mOtherPaint.setTextAlign(Paint.Align.CENTER);
 
         mValueAnimator = ValueAnimator.ofFloat(0, 1800f);
-        mValueAnimator.setDuration(20000);
+        mValueAnimator.setInterpolator(new DecelerateInterpolator());
+        mValueAnimator.setDuration(200);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float animatedValue = (float) animation.getAnimatedValue();
-                startY = getMeasuredHeight() / 2 - animatedValue;
+                float dy = animatedValue - lastFlingDistance;
+                lastFlingDistance = animatedValue;
+                Log.e("dy", "onAnimationUpdate: " + dy);
+                moveDistance -= dy;
+                startY = centerPoint.y - moveDistance;
                 invalidate();
             }
         });
+        mValueAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                isFling = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                isFling = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                isFling = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        mListener = new GestureListener();
+        mGestureDetector = new GestureDetector(getContext(), mListener);
+        mGestureDetector.setIsLongpressEnabled(false);
 
     }
 
@@ -121,27 +182,41 @@ public class WheelView extends View {
         super.onDraw(canvas);
         canvas.drawLine(0, centerPoint.y, getMeasuredWidth(), centerPoint.y, mOtherPaint);
         float traslateY = 0;
-//            float abs = Math.abs(startY);
-        //滑动的距离
-        float dy = centerPoint.y - startY;
-        curentIndex = (int) ((dy - textPadding) / (mCenterTextHeight + textPadding)) + 1;
+
+        if (moveDistance > (mStrings.size() - 1) * (mCenterTextHeight + textPadding)) {
+            startY = centerPoint.y - (mStrings.size() - 1) * (mCenterTextHeight + textPadding);
+            moveDistance = (mStrings.size() - 1) * (mCenterTextHeight + textPadding);
+            Log.e("index", "已经超过");
+        }
+        if (startY < centerPoint.y - mVisibleItem * (mCenterTextHeight + textPadding)) {
+            startY = centerPoint.y - Math.abs(moveDistance % (mCenterTextHeight + textPadding))
+                    - mVisibleItem * (mCenterTextHeight + textPadding);
+            Log.e("index", "startY:" + startY);
+        }
+        if (moveDistance <= 0) {
+            moveDistance = 0;
+            startY = centerPoint.y;
+        }
+        curentIndex = (int) (moveDistance / (mCenterTextHeight + textPadding));
 
         int startIndex = 0;
-        int endIndex = mStrings.size() - 1;
         //如果已经滚过了足够的item
-        if (curentIndex >= mVisibleItem) {
-            startIndex = curentIndex = mVisibleItem;
+        startIndex = curentIndex - mVisibleItem;
+        if (startIndex < 0) {
+            startIndex = 0;
         }
-        if (mStrings.size() - curentIndex > mVisibleItem) {
-            endIndex = curentIndex + mVisibleItem;
+        int endIndex = curentIndex + mVisibleItem;
+        if (endIndex > mStrings.size() - 1) {
+            endIndex = mStrings.size() - 1;
         }
+
         int index = startIndex;
         Log.e("index", "开始:" + index);
         while (index <= endIndex) {
             canvas.save();
             canvas.translate(0, traslateY);
-            if (startY + traslateY > -mCenterTextHeight / 2 + centerPoint.y &&
-                    startY + traslateY < mCenterTextHeight / 2 + centerPoint.y) {
+            if (startY + traslateY > -mCenterTextHeight / 2 - textPadding + centerPoint.y &&
+                    startY + traslateY < mCenterTextHeight / 2 + textPadding + centerPoint.y) {
                 //中心地带
                 canvas.drawText(mStrings.get(index), centerPoint.x, startY + mCenterTextOffset, mCenterPaint);
             } else {
@@ -156,9 +231,61 @@ public class WheelView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mValueAnimator.start();
-//        startY = getMeasuredHeight() / 2 - 1800;
-//        invalidate();
-        return super.onTouchEvent(event);
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_UP:
+                if (!isFling) {
+                    float decimal = moveDistance % (mCenterTextHeight + textPadding);
+                    moveDistance = ((int) (moveDistance / (mCenterTextHeight + textPadding)))
+                            * (mCenterTextHeight + textPadding)
+                            + (decimal < textPadding / 2 + mCenterTextHeight / 2 ? 0 : 1) * (mCenterTextHeight + textPadding);
+                    startY = centerPoint.y - moveDistance;
+                    invalidate();
+                }
+                break;
+        }
+
+        return mGestureDetector.onTouchEvent(event);
     }
+
+
+    class GestureListener extends SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            mValueAnimator.cancel();
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            Log.e(TAG, "onScroll: " + distanceY);
+            moveDistance += distanceY;
+            startY = centerPoint.y - moveDistance;
+            invalidate();
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            Log.e(TAG, "onFling: " + velocityY);
+            float abs = Math.abs(velocityY);
+            int during;
+            float distance;
+            if (abs < 5000) {
+                distance = mCenterTextHeight + textPadding;
+                during = 200;
+            } else {
+                distance = (mCenterTextHeight + textPadding) * mVisibleItem * 2;
+                during = 500;
+            }
+            if (velocityY < 0) {
+                distance = -distance;
+            }
+            lastFlingDistance = 0;
+            mValueAnimator.setFloatValues(0, distance);
+            mValueAnimator.setDuration(during);
+            mValueAnimator.start();
+            return true;
+        }
+    }
+
 }

@@ -20,5 +20,5 @@
     <com.gangganghao.basegraph.WheelView
         android:background="@android:color/white"
         android:layout_width="100dp"
-        android:layout_height="400dp"/>
+        android:layout_height="200dp"/>
 </RelativeLayout>
