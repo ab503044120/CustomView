@@ -286,12 +286,14 @@ public class WheelView extends View {
 
     private void adjust() {
         float decimal = moveDistance % (mCenterTextHeight + textPadding);
-        if (decimal < textPadding / 2 + mCenterTextHeight / 2) {
-            adjustValueAnimator.setFloatValues(0, -decimal);
-        } else {
-            adjustValueAnimator.setFloatValues(0, textPadding/ + mCenterTextHeight/ - decimal);
+        if (decimal != 0) {
+            if (decimal < textPadding / 2 + mCenterTextHeight / 2) {
+                adjustValueAnimator.setFloatValues(0, decimal);
+            } else {
+                adjustValueAnimator.setFloatValues(0, -(textPadding + mCenterTextHeight - decimal));
+            }
+            adjustValueAnimator.start();
         }
-        adjustValueAnimator.start();
 //        moveDistance = ((int) (moveDistance / (mCenterTextHeight + textPadding)))
 //                * (mCenterTextHeight + textPadding)
 //                + (decimal < textPadding / 2 + mCenterTextHeight / 2 ? 0 : 1) * (mCenterTextHeight + textPadding);
