@@ -53,6 +53,9 @@ public class WheelView extends View {
     private GestureDetector mGestureDetector;
     private float lastFlingDistance;
     private boolean isFling;
+    private ValueAnimator adjustValueAnimator;
+    private float lastAdjustDistance;
+    private boolean isAdjust;
 
     public WheelView(Context context) {
         this(context, null);
@@ -108,7 +111,7 @@ public class WheelView extends View {
         mOtherPaint.setColor(otherTextColor);
         mOtherPaint.setTextAlign(Paint.Align.CENTER);
 
-        mValueAnimator = ValueAnimator.ofFloat(0, 1800f);
+        mValueAnimator = new ValueAnimator();
         mValueAnimator.setInterpolator(new DecelerateInterpolator());
         mValueAnimator.setDuration(200);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -137,6 +140,41 @@ public class WheelView extends View {
             @Override
             public void onAnimationCancel(Animator animation) {
                 isFling = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        adjustValueAnimator = new ValueAnimator();
+        adjustValueAnimator.setInterpolator(new DecelerateInterpolator());
+        adjustValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float animatedValue = (float) animation.getAnimatedValue();
+                float dy = animatedValue - lastAdjustDistance;
+                lastAdjustDistance = animatedValue;
+                moveDistance -= dy;
+                startY = centerPoint.y - moveDistance;
+                invalidate();
+            }
+        });
+        adjustValueAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                isAdjust = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                isAdjust = false;
             }
 
             @Override
@@ -231,20 +269,34 @@ public class WheelView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        boolean b = mGestureDetector.onTouchEvent(event);
+        if (b) {
+            return true;
+        }
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
                 if (!isFling) {
-                    float decimal = moveDistance % (mCenterTextHeight + textPadding);
-                    moveDistance = ((int) (moveDistance / (mCenterTextHeight + textPadding)))
-                            * (mCenterTextHeight + textPadding)
-                            + (decimal < textPadding / 2 + mCenterTextHeight / 2 ? 0 : 1) * (mCenterTextHeight + textPadding);
-                    startY = centerPoint.y - moveDistance;
-                    invalidate();
+                    adjust();
                 }
                 break;
         }
 
-        return mGestureDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private void adjust() {
+        float decimal = moveDistance % (mCenterTextHeight + textPadding);
+        if (decimal < textPadding / 2 + mCenterTextHeight / 2) {
+            adjustValueAnimator.setFloatValues(0, -decimal);
+        } else {
+            adjustValueAnimator.setFloatValues(0, textPadding/ + mCenterTextHeight/ - decimal);
+        }
+        adjustValueAnimator.start();
+//        moveDistance = ((int) (moveDistance / (mCenterTextHeight + textPadding)))
+//                * (mCenterTextHeight + textPadding)
+//                + (decimal < textPadding / 2 + mCenterTextHeight / 2 ? 0 : 1) * (mCenterTextHeight + textPadding);
+//        startY = centerPoint.y - moveDistance;
+//        invalidate();
     }
 
 
@@ -270,7 +322,9 @@ public class WheelView extends View {
             float abs = Math.abs(velocityY);
             int during;
             float distance;
-            if (abs < 5000) {
+            if (abs < 2000) {
+                return false;
+            } else if (abs < 5000) {
                 distance = mCenterTextHeight + textPadding;
                 during = 200;
             } else {
