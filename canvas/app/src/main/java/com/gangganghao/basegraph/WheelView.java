@@ -135,11 +135,13 @@ public class WheelView extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
                 isFling = false;
+                adjust();
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 isFling = false;
+                adjust();
             }
 
             @Override
@@ -285,6 +287,7 @@ public class WheelView extends View {
     }
 
     private void adjust() {
+        Log.e("adjust", "adjust: ");
         float decimal = moveDistance % (mCenterTextHeight + textPadding);
         if (decimal != 0) {
             if (decimal < textPadding / 2 + mCenterTextHeight / 2) {
@@ -325,6 +328,7 @@ public class WheelView extends View {
             int during;
             float distance;
             if (abs < 2000) {
+                adjust();
                 return false;
             } else if (abs < 5000) {
                 distance = mCenterTextHeight + textPadding;
@@ -333,6 +337,9 @@ public class WheelView extends View {
                 distance = (mCenterTextHeight + textPadding) * mVisibleItem * 2;
                 during = 500;
             }
+            moveDistance = moveDistance / (mCenterTextHeight + textPadding)
+                    * (mCenterTextHeight + textPadding);
+            startY = centerPoint.y - moveDistance;
             if (velocityY < 0) {
                 distance = -distance;
             }
