@@ -1,6 +1,5 @@
 package com.gangganghao.basegraph;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -52,10 +51,8 @@ public class WheelView extends View {
     private SimpleOnGestureListener mListener;
     private GestureDetector mGestureDetector;
     private float lastFlingDistance;
-    private boolean isFling;
     private ValueAnimator adjustValueAnimator;
     private float lastAdjustDistance;
-    private boolean isAdjust;
 
     public WheelView(Context context) {
         this(context, null);
@@ -126,29 +123,6 @@ public class WheelView extends View {
                 invalidate();
             }
         });
-        mValueAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                isFling = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                isFling = false;
-                adjust();
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                isFling = false;
-                adjust();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
 
         adjustValueAnimator = new ValueAnimator();
         adjustValueAnimator.setInterpolator(new DecelerateInterpolator());
@@ -161,27 +135,6 @@ public class WheelView extends View {
                 moveDistance -= dy;
                 startY = centerPoint.y - moveDistance;
                 invalidate();
-            }
-        });
-        adjustValueAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                isAdjust = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                isAdjust = false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
             }
         });
         mListener = new GestureListener();
@@ -277,9 +230,7 @@ public class WheelView extends View {
         }
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
-                if (!isFling) {
-                    adjust();
-                }
+                adjust();
                 break;
         }
 
@@ -287,7 +238,8 @@ public class WheelView extends View {
     }
 
     private void adjust() {
-        Log.e("adjust", "adjust: ");
+        Log.e(TAG, "adjust: ");
+        lastAdjustDistance = 0;
         float decimal = moveDistance % (mCenterTextHeight + textPadding);
         if (decimal != 0) {
             if (decimal < textPadding / 2 + mCenterTextHeight / 2) {
@@ -297,11 +249,6 @@ public class WheelView extends View {
             }
             adjustValueAnimator.start();
         }
-//        moveDistance = ((int) (moveDistance / (mCenterTextHeight + textPadding)))
-//                * (mCenterTextHeight + textPadding)
-//                + (decimal < textPadding / 2 + mCenterTextHeight / 2 ? 0 : 1) * (mCenterTextHeight + textPadding);
-//        startY = centerPoint.y - moveDistance;
-//        invalidate();
     }
 
 
@@ -309,6 +256,7 @@ public class WheelView extends View {
         @Override
         public boolean onDown(MotionEvent e) {
             mValueAnimator.cancel();
+            adjustValueAnimator.cancel();
             return true;
         }
 
@@ -318,7 +266,7 @@ public class WheelView extends View {
             moveDistance += distanceY;
             startY = centerPoint.y - moveDistance;
             invalidate();
-            return true;
+            return false;
         }
 
         @Override
@@ -328,7 +276,6 @@ public class WheelView extends View {
             int during;
             float distance;
             if (abs < 2000) {
-                adjust();
                 return false;
             } else if (abs < 5000) {
                 distance = mCenterTextHeight + textPadding;
@@ -337,12 +284,18 @@ public class WheelView extends View {
                 distance = (mCenterTextHeight + textPadding) * mVisibleItem * 2;
                 during = 500;
             }
-            moveDistance = moveDistance / (mCenterTextHeight + textPadding)
-                    * (mCenterTextHeight + textPadding);
-            startY = centerPoint.y - moveDistance;
+            float offset = moveDistance % (mCenterTextHeight + textPadding);
+            Log.e(TAG, "onFling: " + velocityY + "moveDistance:" + moveDistance + " distance:" + distance
+                    + " offset:" + offset);
             if (velocityY < 0) {
+                //往上滑动:需要减去多余的距离
+                distance -= offset;
                 distance = -distance;
+            } else {
+                //往下滑:
+                distance += offset;
             }
+
             lastFlingDistance = 0;
             mValueAnimator.setFloatValues(0, distance);
             mValueAnimator.setDuration(during);
