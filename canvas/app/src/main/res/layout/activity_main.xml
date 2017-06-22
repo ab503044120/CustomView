@@ -19,6 +19,7 @@
     <!--android:layout_height="match_parent"-->
     <!--/>-->
     <com.gangganghao.basegraph.WheelView
+        android:id="@+id/wv"
         android:layout_width="100dp"
         android:layout_height="200dp"
         android:background="@android:color/white"/>
