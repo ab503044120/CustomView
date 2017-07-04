@@ -18,9 +18,9 @@
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="match_parent"-->
     <!--/>-->
-    <com.gangganghao.basegraph.WheelView
+    <com.gangganghao.basegraph.CircleProgress1
         android:id="@+id/wv"
-        android:layout_width="100dp"
-        android:layout_height="200dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@android:color/white"/>
 </RelativeLayout>
