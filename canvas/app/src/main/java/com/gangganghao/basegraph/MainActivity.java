@@ -2,9 +2,10 @@ package com.gangganghao.basegraph;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity {
-    private WheelView wv;
+    private CircleProgress1 wv;
     private android.widget.RelativeLayout activitymain;
 
 //    private PieView pv;
@@ -13,6 +14,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.activitymain = (RelativeLayout) findViewById(R.id.activity_main);
+        this.wv = (CircleProgress1) findViewById(R.id.wv);
+        wv.setProgress(3.0f);
+//        wv.startAnimation();
 //        this.activitymain = (RelativeLayout) findViewById(R.id.activity_main);
 //        this.wv = (WheelView) findViewById(R.id.wv);
 //        wv.setWheelViewSelectListener(new WheelView.WheelViewSelectListener() {
