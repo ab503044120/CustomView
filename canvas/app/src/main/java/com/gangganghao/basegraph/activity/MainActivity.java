@@ -1,11 +1,14 @@
-package com.gangganghao.basegraph;
+package com.gangganghao.basegraph.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.RelativeLayout;
 
+import com.gangganghao.basegraph.GradientCircleProgress;
+import com.gangganghao.basegraph.R;
+
 public class MainActivity extends AppCompatActivity {
-    private CircleProgress1 wv;
+    private GradientCircleProgress wv;
     private android.widget.RelativeLayout activitymain;
 
 //    private PieView pv;
@@ -15,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.activitymain = (RelativeLayout) findViewById(R.id.activity_main);
-        this.wv = (CircleProgress1) findViewById(R.id.wv);
-        wv.setProgress(3.0f);
+        this.wv = (GradientCircleProgress) findViewById(R.id.wv);
+        wv.setMax(3.0f);
 //        wv.startAnimation();
 //        this.activitymain = (RelativeLayout) findViewById(R.id.activity_main);
 //        this.wv = (WheelView) findViewById(R.id.wv);

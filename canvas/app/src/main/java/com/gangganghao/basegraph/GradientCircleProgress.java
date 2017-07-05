@@ -17,7 +17,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
  * Created by Administrator on 2017/7/4.
  */
 
-public class CircleProgress1 extends View {
+public class GradientCircleProgress extends View {
     private ValueAnimator mValueAnimator;
     private Point mCenterPoint;
     private Paint mPaint;
@@ -28,16 +28,21 @@ public class CircleProgress1 extends View {
     private float centerPadding;
     private float mTextHeight;
     private float max = 0;
+    private SweepGradient mSweepGradient0_1;
+    private RectF mOvalRectF;
+    private LinearGradient mLinearGradient0_1;
+    private SweepGradient mSweepGradient1_2;
+    private LinearGradient mLinearGradient1_2;
 
-    public CircleProgress1(Context context) {
+    public GradientCircleProgress(Context context) {
         this(context, null);
     }
 
-    public CircleProgress1(Context context, AttributeSet attrs) {
+    public GradientCircleProgress(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CircleProgress1(Context context, AttributeSet attrs, int defStyle) {
+    public GradientCircleProgress(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -75,6 +80,15 @@ public class CircleProgress1 extends View {
         mFontMetrics = mTextPaint.getFontMetrics();
         mTextHeight = mFontMetrics.bottom - mFontMetrics.top;
         centerPadding = mTextHeight / 2 - mFontMetrics.bottom;
+        mSweepGradient0_1 = new SweepGradient(mCenterPoint.x, mCenterPoint.y, 0xfffea546, 0xfffb3131);
+        mLinearGradient0_1 = new LinearGradient(0, mCenterPoint.y - mTextHeight / 2, 0, mCenterPoint.y + mTextHeight / 2
+                , 0xffffe492, 0xfffb3131, Shader.TileMode.CLAMP);
+
+        mSweepGradient1_2 = new SweepGradient(mCenterPoint.x, mCenterPoint.y, 0xfffb3131, 0xffc60b0b);
+        mLinearGradient1_2 = new LinearGradient(0, mCenterPoint.y - mTextHeight / 2, 0, mCenterPoint.y + mTextHeight / 2
+                , 0xfffb3131, 0xffc60b0b, Shader.TileMode.CLAMP);
+
+        mOvalRectF = new RectF(mCenterPoint.x - radius, mCenterPoint.y - radius, mCenterPoint.x + radius, mCenterPoint.y + radius);
     }
 
     @Override
@@ -82,38 +96,30 @@ public class CircleProgress1 extends View {
         super.onDraw(canvas);
         if (mAnimatedValue < 1.0f) {
             mPaint.setColor(0xfffea546);
-            mPaint.setShader(new SweepGradient(mCenterPoint.x, mCenterPoint.y, 0xfffea546, 0xfffb3131));
-            canvas.drawArc(new RectF(mCenterPoint.x - radius, mCenterPoint.y - radius, mCenterPoint.x + radius, mCenterPoint.y + radius)
-                    , 0, mAnimatedValue * 360, false, mPaint);
+            mPaint.setShader(mSweepGradient0_1);
+            canvas.drawArc(mOvalRectF, 0, mAnimatedValue * 360, false, mPaint);
 
-            LinearGradient shader1 = new LinearGradient(0, mCenterPoint.y - mTextHeight / 2, 0, mCenterPoint.y + mTextHeight / 2
-                    , 0xffffe492, 0xfffb3131, Shader.TileMode.CLAMP);
-            mTextPaint.setShader(shader1);
+            mTextPaint.setShader(mLinearGradient0_1);
             canvas.drawText((int) (mAnimatedValue * 100) + "%", mCenterPoint.x, mCenterPoint.y + centerPadding, mTextPaint);
         } else if (mAnimatedValue < 2.0f) {
             mPaint.setColor(0xfffea546);
-            mPaint.setShader(new SweepGradient(mCenterPoint.x, mCenterPoint.y, 0xfffea546, 0xfffb3131));
+            mPaint.setShader(mSweepGradient0_1);
             canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, radius, mPaint);
 
             mPaint.setColor(0xfffb3131);
-            mPaint.setShader(new SweepGradient(mCenterPoint.x, mCenterPoint.y, 0xfffb3131, 0xffc60b0b));
-            canvas.drawArc(new RectF(mCenterPoint.x - radius, mCenterPoint.y - radius, mCenterPoint.x + radius, mCenterPoint.y + radius)
-                    , 0, (mAnimatedValue - 1.0f) * 360, false, mPaint);
-
-            LinearGradient shader1 = new LinearGradient(0, mCenterPoint.y - mTextHeight / 2, 0, mCenterPoint.y + mTextHeight / 2
-                    , 0xfffb3131, 0xffc60b0b, Shader.TileMode.CLAMP);
-            mTextPaint.setShader(shader1);
+            mPaint.setShader(mSweepGradient1_2);
+            canvas.drawArc(mOvalRectF, 0, (mAnimatedValue - 1.0f) * 360, false, mPaint);
+            mTextPaint.setShader(mLinearGradient1_2);
 
             canvas.drawText((int) (mAnimatedValue * 100) + "%", mCenterPoint.x, mCenterPoint.y + centerPadding, mTextPaint);
         } else if (mAnimatedValue < 3.0f) {
             mPaint.setColor(0xfffb3131);
-            mPaint.setShader(new SweepGradient(mCenterPoint.x, mCenterPoint.y, 0xfffb3131, 0xffc60b0b));
+            mPaint.setShader(mSweepGradient1_2);
             canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, radius, mPaint);
 
             mPaint.setColor(0xffc60b0b);
             mPaint.setShader(null);
-            canvas.drawArc(new RectF(mCenterPoint.x - radius, mCenterPoint.y - radius, mCenterPoint.x + radius, mCenterPoint.y + radius)
-                    , 0, (mAnimatedValue - 2.0f) * 360, false, mPaint);
+            canvas.drawArc(mOvalRectF, 0, (mAnimatedValue - 2.0f) * 360, false, mPaint);
 
             mTextPaint.setShader(null);
             mTextPaint.setColor(0xffc60b0b);
@@ -139,8 +145,7 @@ public class CircleProgress1 extends View {
             mValueAnimator.start();
         }
     }
-
-    public void setProgress(float max) {
+    public void setMax(float max) {
         this.max = max;
         startAnimation();
 

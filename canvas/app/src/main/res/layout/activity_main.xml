@@ -11,7 +11,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.gangganghao.basegraph.MainActivity">
+    tools:context="com.gangganghao.basegraph.activity.MainActivity">
 
     <!--<com.gangganghao.basegraph.ProgressCircle-->
     <!--android:id="@+id/pv"-->
@@ -22,20 +22,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.gangganghao.basegraph.CircleProgress1
+        <com.gangganghao.basegraph.GradientCircleProgress
             android:id="@+id/wv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/white"/>
 
-        <com.gangganghao.basegraph.CircleProgress1
+        <com.gangganghao.basegraph.GradientCircleProgress
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@android:color/white"/>
 
-        <com.gangganghao.basegraph.CircleProgress1
+        <com.gangganghao.basegraph.GradientCircleProgress
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
