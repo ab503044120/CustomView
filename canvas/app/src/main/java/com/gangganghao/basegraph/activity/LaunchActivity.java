@@ -34,6 +34,7 @@ public class LaunchActivity extends AppCompatActivity {
         mItems.add(new Item("MainActivity", MainActivity.class));
         mItems.add(new Item("CubeViewActivity", CubeViewActivity.class));
         mItems.add(new Item("RatioActivity", RatioActivity.class));
+        mItems.add(new Item("TimePieActivity", TimePieActivity.class));
         lv.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {

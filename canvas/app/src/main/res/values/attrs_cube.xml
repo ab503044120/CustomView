@@ -1,0 +1,10 @@
+<resources>
+    <declare-styleable name="CubeView">
+        <attr name="cube_stroke" format="dimension"/>
+        <attr name="cube_space" format="dimension"/>
+        <attr name="cube_number_textsize" format="dimension"/>
+        <attr name="cube_number_textcolor" format="color"/>
+        <attr name="cube_name_textsize" format="dimension"/>
+        <attr name="cube_name_textcolor" format="color"/>
+    </declare-styleable>
+</resources>

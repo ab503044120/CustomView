@@ -19,6 +19,9 @@
         <activity android:name=".activity.MainActivity"/>
         <activity android:name=".activity.CircleProgressActivity"/>
         <activity android:name=".activity.PieActivity"/>
+        <activity android:name=".activity.CubeViewActivity"/>
+        <activity android:name=".activity.RatioActivity"/>
+        <activity android:name=".activity.TimePieActivity"/>
 
     </application>
 
