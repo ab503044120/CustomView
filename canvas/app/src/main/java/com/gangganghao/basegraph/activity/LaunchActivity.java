@@ -32,6 +32,8 @@ public class LaunchActivity extends AppCompatActivity {
         mItems.add(new Item("pie", PieActivity.class));
         mItems.add(new Item("GradientCircleProgress", CircleProgressActivity.class));
         mItems.add(new Item("MainActivity", MainActivity.class));
+        mItems.add(new Item("CubeViewActivity", CubeViewActivity.class));
+        mItems.add(new Item("RatioActivity", RatioActivity.class));
         lv.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {

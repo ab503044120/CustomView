@@ -199,6 +199,7 @@ public class PieGraph extends View {
      */
     private float mLineFixLen;
     private ValueAnimator mValueAnimator;
+    private Path mPathBuffer;
 
     /**
      * 选中监听
@@ -267,6 +268,9 @@ public class PieGraph extends View {
         separationLinesPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         separationLinesPaint.setColor(Color.TRANSPARENT);
         setLayerType(LAYER_TYPE_HARDWARE, null);
+
+        mPathBuffer = new Path();
+
         mValueAnimator = ValueAnimator.ofFloat(0, 1.0f);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -420,6 +424,7 @@ public class PieGraph extends View {
             return;
         }
         for (PieDataHolder pieDataHolder : pieDataHolders) {
+            mPathBuffer.reset();
             mPiePaint.setColor(pieDataHolder.mColor);
             if (pieDataHolder.mSweepAngel == 0) {
                 // 0度的不画

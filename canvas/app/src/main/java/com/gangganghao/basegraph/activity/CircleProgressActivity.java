@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
-import com.gangganghao.basegraph.GradientCircleProgress;
+import com.gangganghao.basegraph.ggh.GradientCircleProgress;
 import com.gangganghao.basegraph.R;
 
 /**

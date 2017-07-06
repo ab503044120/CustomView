@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -160,9 +159,16 @@ public class CubeView extends View {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        startAnimation();
+    }
+
+    public void startAnimation() {
+        if (mItems == null || mItems.isEmpty() || mMaxWidth == 0) {
+            return;
+        }
         mValueAnimator.start();
-        return super.onTouchEvent(event);
     }
 
     public static class Item {
