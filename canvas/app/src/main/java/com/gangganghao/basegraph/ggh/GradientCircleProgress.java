@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -52,7 +53,8 @@ public class GradientCircleProgress extends View {
         mCenterPoint = new Point(0, 0);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(20);
+        mPaint.setStrokeWidth(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
+                getResources().getDisplayMetrics()));
         mPaint.setStrokeCap(Paint.Cap.BUTT);
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -95,11 +97,20 @@ public class GradientCircleProgress extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mAnimatedValue < 1.0f) {
+            mPaint.setColor(0xffE5E5E5);
+            mPaint.setShader(null);
+            canvas.drawCircle(mCenterPoint.x, mCenterPoint.y, radius, mPaint);
+
             mPaint.setColor(0xfffea546);
             mPaint.setShader(mSweepGradient0_1);
             canvas.drawArc(mOvalRectF, 0, mAnimatedValue * 360, false, mPaint);
 
-            mTextPaint.setShader(mLinearGradient0_1);
+            if (mAnimatedValue == 0) {
+                mTextPaint.setColor(0xffE5E5E5);
+                mTextPaint.setShader(null);
+            } else {
+                mTextPaint.setShader(mLinearGradient0_1);
+            }
             canvas.drawText((int) (mAnimatedValue * 100) + "%", mCenterPoint.x, mCenterPoint.y + centerPadding, mTextPaint);
         } else if (mAnimatedValue < 2.0f) {
             mPaint.setColor(0xfffea546);
@@ -139,12 +150,21 @@ public class GradientCircleProgress extends View {
         startAnimation();
     }
 
+    /**
+     * 开始动画
+     */
     public void startAnimation() {
         if (radius != 0 && max != 0) {
             mValueAnimator.setFloatValues(0, max);
             mValueAnimator.start();
         }
     }
+
+    /**
+     * 设置最大值
+     *
+     * @param max
+     */
     public void setMax(float max) {
         this.max = max;
         startAnimation();

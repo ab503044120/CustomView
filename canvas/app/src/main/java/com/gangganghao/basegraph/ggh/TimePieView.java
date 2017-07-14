@@ -8,10 +8,9 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
+import android.util.TypedValue;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,6 +33,7 @@ public class TimePieView extends View {
     private float mAngleStep;
     private ValueAnimator mValueAnimator;
     private float mAnimatedValue;
+    private float mInnerCircleStroke = 10;
 
     public TimePieView(Context context) {
         this(context, null);
@@ -61,25 +61,13 @@ public class TimePieView extends View {
         mArcPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextSize(36);
+        mTextPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 11,
+                getResources().getDisplayMetrics()));
         mTextPaint.setColor(0xff333333);
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         float textHeight = fontMetrics.bottom - fontMetrics.top;
         textOffset = textHeight / 2 - fontMetrics.bottom;
-        mDatas = new ArrayList<>();
-        mDatas.add(100L);
-        mDatas.add(200L);
-        mDatas.add(500L);
-        mDatas.add(1000L);
-        mDatas.add(1000L);
-        mDatas.add(900L);
-        mDatas.add(100L);
-        mDatas.add(800L);
-        mDatas.add(1100L);
-        mDatas.add(500L);
-        mDatas.add(1540L);
-        mDatas.add(1540L);
-        setData(mDatas);
+
         mValueAnimator = ValueAnimator.ofFloat(0, 1.0f);
         mValueAnimator.setDuration(2000);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -90,13 +78,15 @@ public class TimePieView extends View {
                 invalidate();
             }
         });
+        mInnerCircleStroke = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4,
+                getResources().getDisplayMetrics());
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int min = Math.min(getMeasuredHeight(), getMeasuredWidth());
-        mMaxRadius = min * 2 / 3 / 2;
+        mMaxRadius = min * 7 / 10 / 2;
         mCenterPointF = new PointF(getMeasuredWidth() / 2, getMeasuredHeight() / 2);
         mRectF = new RectF();
     }
@@ -108,44 +98,60 @@ public class TimePieView extends View {
         canvas.drawCircle(mCenterPointF.x, mCenterPointF.y, mMaxRadius * (1 - 4 / 9f), mGrayCirclePaint);
         canvas.drawCircle(mCenterPointF.x, mCenterPointF.y, mMaxRadius * (1 - 4 / 9f), mGrayCirclePaint);
 
-        float startAngle = 0;
-        float base = mMaxRadius / 3f;
+        if (mDatas != null && !mDatas.isEmpty() && mMax != 0) {
+            float startAngle = 0;
+            float base = mMaxRadius / 3f;
 
-        for (int i = 0; i < mDatas.size(); i++) {
-            mArcPaint.setColor(colors[i % 4]);
-            mRectF.left = mCenterPointF.x - base - mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
-            mRectF.top = mCenterPointF.y - base - mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
-            mRectF.right = mCenterPointF.x + base + mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
-            mRectF.bottom = mCenterPointF.y + base + mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
-            canvas.drawArc(mRectF, 180 + startAngle * mAnimatedValue, mAngleStep * mAnimatedValue, true, mArcPaint);
-            startAngle += mAngleStep;
+            for (int i = 0; i < mDatas.size(); i++) {
+                mArcPaint.setColor(colors[i % 4]);
+                mRectF.left = mCenterPointF.x - base - mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
+                mRectF.top = mCenterPointF.y - base - mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
+                mRectF.right = mCenterPointF.x + base + mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
+                mRectF.bottom = mCenterPointF.y + base + mMaxRadius * 2 / 3 * mDatas.get(i) / mMax * mAnimatedValue;
+                canvas.drawArc(mRectF, 180 + startAngle * mAnimatedValue, mAngleStep * mAnimatedValue, true, mArcPaint);
+                startAngle += mAngleStep;
+            }
         }
 
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(mInnerCircleStroke);
         canvas.drawCircle(mCenterPointF.x, mCenterPointF.y, mMaxRadius / 3f, mPaint);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.WHITE);
         canvas.drawCircle(mCenterPointF.x, mCenterPointF.y, mMaxRadius / 3f - 5f, mPaint);
 
         mPaint.setColor(0xff2270ac);
-        mPaint.setStrokeWidth(4);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeWidth(mInnerCircleStroke * 0.4f);
         float startXL = mCenterPointF.x - mMaxRadius / 3f;
         float startXR = mCenterPointF.x + mMaxRadius / 3f;
-        canvas.drawLine(startXL, mCenterPointF.y, startXL + 10 + 5, mCenterPointF.y, mPaint);
-        canvas.drawLine(startXR, mCenterPointF.y, startXR - 10 - 5, mCenterPointF.y, mPaint);
-        canvas.drawText("9", startXL + 10 + 5 + 5, mCenterPointF.y + textOffset, mTextPaint);
-        canvas.drawText("3", startXR - 10 - 5 - mTextPaint.measureText("3") - 5, mCenterPointF.y + textOffset, mTextPaint);
+        canvas.drawLine(startXL, mCenterPointF.y, startXL + mInnerCircleStroke + mInnerCircleStroke / 2, mCenterPointF.y, mPaint);
+        canvas.drawLine(startXR, mCenterPointF.y, startXR - mInnerCircleStroke - mInnerCircleStroke / 2, mCenterPointF.y, mPaint);
+
+        canvas.drawText("9"
+                , startXL + mInnerCircleStroke + mInnerCircleStroke / 2 + mInnerCircleStroke / 2, mCenterPointF.y + textOffset, mTextPaint);
+        canvas.drawText("3"
+                , startXR - mInnerCircleStroke - mInnerCircleStroke / 2 - mInnerCircleStroke / 2 - mTextPaint.measureText("3"), mCenterPointF.y + textOffset, mTextPaint);
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        startAnimation();
+    }
+
+    public void startAnimation() {
+        if (mDatas == null || mDatas.isEmpty() || mMaxRadius == 0) {
+            return;
+        }
         mValueAnimator.start();
-        return super.onTouchEvent(event);
     }
 
     public void setData(List<Long> datas) {
         mDatas = datas;
         mMax = Collections.max(mDatas);
         mAngleStep = 360 / mDatas.size();
+        requestLayout();
     }
 
 }

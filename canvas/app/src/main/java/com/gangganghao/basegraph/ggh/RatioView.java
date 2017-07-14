@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -22,8 +23,8 @@ public class RatioView extends View {
     private PointF mCenterPointF;
     private Paint mPaint;
     private ArgbEvaluator mArgbEvaluator;
-    private int mStrokeWidth;
-    private float mRadio;
+    private float mStrokeWidth;
+    private float mRadio = -1;
     private ValueAnimator mValueAnimator;
     private float mAnimatedValue;
     private int mMidColor;
@@ -53,12 +54,15 @@ public class RatioView extends View {
         mCenterPointF = new PointF(0, 0);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.STROKE);
-        mStrokeWidth = 50;
+        mStrokeWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15,
+                getResources().getDisplayMetrics());
         mPaint.setStrokeWidth(mStrokeWidth);
 
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextSize(40);
-        mTextPaint.setStrokeWidth(4);
+        mTextPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 14,
+                getResources().getDisplayMetrics()));
+        mTextPaint.setStrokeWidth(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1f,
+                getResources().getDisplayMetrics()));
         mTextPaint.setTextAlign(Paint.Align.CENTER);
 
 
@@ -85,25 +89,28 @@ public class RatioView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mCenterPointF.set(getMeasuredWidth() / 2, getMeasuredHeight() / 2);
         int min = Math.min(getMeasuredHeight(), getMeasuredWidth());
-        mRadius = min / 5;
+        mRadius = min / 3;
         mRectF = new RectF(mCenterPointF.x - mRadius, mCenterPointF.y - mRadius, mCenterPointF.x + mRadius, mCenterPointF.y + mRadius);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        canvas.drawCircle(mCenterPointF.x, mCenterPointF.y, mRadius, mPaint);
-        mPaint.setColor(mRightColor);
-        canvas.drawArc(mRectF, 0, mRadio / 2 * 360 * mAnimatedValue, false, mPaint);
-        canvas.drawArc(mRectF, 0, -mRadio / 2 * 360 * mAnimatedValue, false, mPaint);
 
-        mPaint.setColor(mLeftColor);
-        canvas.drawArc(mRectF, 180, (1 - mRadio) / 2 * 360 * mAnimatedValue, false, mPaint);
-        canvas.drawArc(mRectF, 180, -(1 - mRadio) / 2 * 360 * mAnimatedValue, false, mPaint);
+        if (mRadio != 0) {
+            mPaint.setColor(mRightColor);
+            canvas.drawArc(mRectF, 0, mRadio / 2 * 360 * mAnimatedValue, false, mPaint);
+            canvas.drawArc(mRectF, 1, -mRadio / 2 * 360 * mAnimatedValue - 2, false, mPaint);
+        }
+        if (1 - mRadio != 0) {
+            mPaint.setColor(mLeftColor);
+            canvas.drawArc(mRectF, 180, (1 - mRadio) / 2 * 360 * mAnimatedValue, false, mPaint);
+            canvas.drawArc(mRectF, 180 + 1, -(1 - mRadio) / 2 * 360 * mAnimatedValue - 2, false, mPaint);
+        }
 
         if (mAnimatedValue >= 1) {
             mTextPaint.setColor(mRightColor);
-            int distance = mRadius + mStrokeWidth / 2;
+            float distance = mRadius + mStrokeWidth / 2;
             double radians = Math.toRadians(((1 - mRadio) > 0.5f ? mRadio : (1 - mRadio)) / 4 * 360);
             float x = (float) (mCenterPointF.x + Math.cos(radians) * distance);
             float y = (float) (mCenterPointF.y - Math.sin(radians) * distance);
@@ -111,10 +118,10 @@ public class RatioView extends View {
             float endY = (float) (y - Math.sin(radians) * distance * 0.2f);
             canvas.drawLine(x, y, endX, endY, mTextPaint);
             float dx = mTextPaint.measureText(mRight);
-            float dx1 = mTextPaint.measureText(mRadio * 100 + "%");
+            float dx1 = mTextPaint.measureText((int)(mRadio * 100+0.5) + "%");
             dx = Math.max(dx, dx1) * 1.4f;
             canvas.drawLine(endX, endY, endX + dx, endY, mTextPaint);
-            canvas.drawText(mRadio * 100 + "%", endX + dx / 2, endY - textOffset, mTextPaint);
+            canvas.drawText((int)(mRadio * 100+0.5) + "%", endX + dx / 2, endY - textOffset, mTextPaint);
             canvas.drawText(mRight, endX + dx / 2, endY + mTextHeight - textOffset, mTextPaint);
 
             mTextPaint.setColor(mLeftColor);
@@ -124,10 +131,10 @@ public class RatioView extends View {
             endY = (float) (y + Math.sin(radians) * distance * 0.2f);
             canvas.drawLine(x, y, endX, endY, mTextPaint);
             dx = mTextPaint.measureText(mLeft);
-            dx1 = mTextPaint.measureText(sub(1d, Double.valueOf(mRadio + "")) * 100 + "%");
+            dx1 = mTextPaint.measureText((int) ((sub(1d, Double.valueOf(mRadio + ""))) * 100 + 0.5)  + "%");
             dx = Math.max(dx, dx1) * 1.4f;
             canvas.drawLine(endX, endY, endX - dx, endY, mTextPaint);
-            canvas.drawText((sub(1d, Double.valueOf(mRadio + ""))) * 100 + "%", endX - dx / 2, endY - textOffset, mTextPaint);
+            canvas.drawText((int) ((sub(1d, Double.valueOf(mRadio + ""))) * 100 + 0.5) + "%", endX - dx / 2, endY - textOffset, mTextPaint);
             canvas.drawText(mLeft, endX - dx / 2, endY + mTextHeight - textOffset, mTextPaint);
         }
     }
@@ -145,7 +152,7 @@ public class RatioView extends View {
     }
 
     public void startAnimation() {
-        if (mRadio == 0 || mRadius == 0) {
+        if (mRadio == -1 || mRadius == 0) {
             return;
         }
         mValueAnimator.start();

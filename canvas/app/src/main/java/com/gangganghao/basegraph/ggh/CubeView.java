@@ -119,7 +119,7 @@ public class CubeView extends View {
             return;
         }
         super.onMeasure(widthMeasureSpec
-                , MeasureSpec.makeMeasureSpec(mItems.size() * 2 * mitemStroke, MeasureSpec.EXACTLY));
+                , MeasureSpec.makeMeasureSpec(mItems.size() * (mitemStroke + mCubeSpace) - mCubeSpace, MeasureSpec.EXACTLY));
         mMaxWidth = getMeasuredWidth() * 2 / 3;
 
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
@@ -138,18 +138,21 @@ public class CubeView extends View {
         }
         int startY = mitemStroke / 2;
         for (Item item : mItems) {
-            float width = mMaxWidth * (item.number / mMaxItem.number);
+            float width = 0;
+            if (mMaxItem.number != 0) {
+                width = mMaxWidth * (item.number / mMaxItem.number);
+            }
 
             LinearGradient shader = new LinearGradient(0, startY, width * mAnimatedValue + mitemStroke / 2, startY,
                     item.colorStart, item.colorEnd, Shader.TileMode.REPEAT);
             mPaint.setShader(shader);
-            canvas.drawLine(0, startY, width * mAnimatedValue, startY, mPaint);
+            canvas.drawLine(0, startY, width * mAnimatedValue == 0 ? 1 : width * mAnimatedValue, startY, mPaint);
             if (mAnimatedValue == 1) {
-                float textWidth = mTextPaint.measureText(item.number + "");
+                float textWidth = mTextPaint.measureText(item.number + "元");
                 if (textWidth < width) {
                     //有足够的空间画文字
                     float marginRight = width - textWidth;
-                    canvas.drawText(item.number + "", marginRight, startY + textOffset, mTextPaint);
+                    canvas.drawText(item.number + "元", marginRight, startY + textOffset, mTextPaint);
                 }
                 float marginLeft = width + mitemStroke;
                 canvas.drawText(item.name, marginLeft, startY + nameTextOffset, mNameTextPaint);
