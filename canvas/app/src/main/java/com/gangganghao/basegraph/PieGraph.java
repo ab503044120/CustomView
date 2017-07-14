@@ -200,6 +200,7 @@ public class PieGraph extends View {
     private float mLineFixLen;
     private ValueAnimator mValueAnimator;
     private Path mPathBuffer;
+    private float sliceSpace = 10;
 
     /**
      * 选中监听
@@ -423,6 +424,7 @@ public class PieGraph extends View {
         if (pieDataHolders == null || pieDataHolders.size() <= 0) {
             return;
         }
+        float startAngel = mRotate;
         for (PieDataHolder pieDataHolder : pieDataHolders) {
             mPathBuffer.reset();
             mPiePaint.setColor(pieDataHolder.mColor);
@@ -441,8 +443,21 @@ public class PieGraph extends View {
                 canvas.drawArc(mPieSelectRectF, pieDataHolder.mStartAngel * mAnimatedValue + mRotate, pieDataHolder.mSweepAngel * mAnimatedValue, true, mPiePaint);
             } else {
                 // 没有选中的时候正常画圆弧
-                canvas.drawArc(mPieNormalRectF, pieDataHolder.mStartAngel * mAnimatedValue + mRotate, pieDataHolder.mSweepAngel * mAnimatedValue, true, mPiePaint);
+                mPathBuffer.reset();
+                startAngel -= 2;
+                float startX = (float) (mPieNormalRectF.centerX() + mPieRadius * Math.cos(Math.toRadians(startAngel)));
+                float startY = (float) (mPieNormalRectF.centerY() + mPieRadius * Math.sin(Math.toRadians(startAngel)));
+                mPathBuffer.moveTo(startX, startY);
+                mPathBuffer.addArc(mPieNormalRectF, startAngel * mAnimatedValue, mAnimatedValue * (pieDataHolder.mSweepAngel - 4));
+                float distance = (float) (Math.sin(Math.toRadians(4)) * mPieRadius / Math.sin(Math.toRadians(180 - (pieDataHolder.mSweepAngel - 4))));
+                float endX = (float) (mPieNormalRectF.centerX() + distance * Math.cos(Math.toRadians(startAngel)));
+                float endY = (float) (mPieNormalRectF.centerY() + distance * Math.sin(Math.toRadians(startAngel)));
+                mPathBuffer.lineTo(endX, endY);
+                mPathBuffer.close();
+                canvas.drawPath(mPathBuffer, mPiePaint);
+//                canvas.drawArc(mPieNormalRectF, pieDataHolder.mStartAngel * mAnimatedValue + mRotate, pieDataHolder.mSweepAngel * mAnimatedValue, true, mPiePaint);
             }
+            startAngel += pieDataHolder.mSweepAngel - 4;
         }
     }
 
@@ -631,7 +646,7 @@ public class PieGraph extends View {
     }
 
     public void startAnimation() {
-        mValueAnimator.setDuration(20000);
+        mValueAnimator.setDuration(2000);
         mValueAnimator.start();
     }
 
@@ -689,27 +704,6 @@ public class PieGraph extends View {
             }
             preSum += pieDataHolder.mSweepAngel;
 
-        }
-        // 这里要调整一下比例，因为精度的原因，有的时候可能加起来不是100%，解决办法呢就是最大的比例直接用100减掉其他的
-        int maxRatioPosition = 0;
-        float maxRatioValue = 0;
-        for (PieDataHolder pieDataHolder : pieDataHolders) {
-            if (maxRatioValue < pieDataHolder.mRatio) {
-                maxRatioValue = pieDataHolder.mRatio;
-                maxRatioPosition = pieDataHolder.mPosition;
-            }
-        }
-        float sumWithOutMax = 0;
-        PieDataHolder maxHolder = null;
-        for (PieDataHolder pieDataHolder : pieDataHolders) {
-            if (pieDataHolder.mPosition != maxRatioPosition) {
-                sumWithOutMax += pieDataHolder.mRatio;
-            } else {
-                maxHolder = pieDataHolder;
-            }
-        }
-        if (maxHolder != null) {
-            maxHolder.mRatio = 1 - Float.parseFloat(mDecimalFormat.format(sumWithOutMax));
         }
 
         //找到最长的子确认线长度
