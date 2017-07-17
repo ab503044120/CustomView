@@ -7,7 +7,7 @@
 
     <com.gangganghao.basegraph.PieGraph
         android:id="@+id/pg"
-        android:background="#000000"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="#ffffff"/>
 </LinearLayout>

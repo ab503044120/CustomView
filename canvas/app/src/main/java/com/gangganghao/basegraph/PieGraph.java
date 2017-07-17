@@ -8,10 +8,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.text.Layout;
+import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -97,10 +97,6 @@ public class PieGraph extends View {
      */
     private float mTextHeight;
     /**
-     * 文字的基准线
-     */
-    private float mTextBottom;
-    /**
      * 画百分比还是文字 true的时候之后百分比，false的时候画文字加百分比
      */
     private boolean mIsDrawRatio;
@@ -116,10 +112,6 @@ public class PieGraph extends View {
      * dot半径
      */
     private float mLineDot;
-    /**
-     * 线和字的距离
-     */
-    private float mLineTextMargin;
     /**
      * 线和大圆距离
      */
@@ -147,7 +139,7 @@ public class PieGraph extends View {
     /**
      * 饼状图选中时候那个矩形区域，和这个mSelectOffset有关系
      */
-    private RectF mPieSelectRectF;
+    private RectF mPieTmpRectF;
     /**
      * 饼状图的画笔
      */
@@ -161,7 +153,6 @@ public class PieGraph extends View {
      */
     private Rect mCurrentTextRect;
 
-    private Rect mCurrentTextRectDown;
     /**
      * 第一个文字的区域，在判断最后一个文字的区域是否有重叠的时候，即判断了前一个也判断了第一个
      */
@@ -194,13 +185,14 @@ public class PieGraph extends View {
 
 
     private PointF sliceVector = new PointF();
-    /**
-     * 修复的线长度
-     */
-    private float mLineFixLen;
+
     private ValueAnimator mValueAnimator;
     private Path mPathBuffer;
-    private float sliceSpace = 10;
+    private float mTextCenterOffset;
+    private TextPaint mHoleTextPaint;
+    private int mHoleTextColor;
+    private int mHoleTextSize;
+    private String mHoleText = "";
 
     /**
      * 选中监听
@@ -237,15 +229,18 @@ public class PieGraph extends View {
         mTextPaint.setTextAlign(Paint.Align.CENTER);
         pieDataHolders = new ArrayList<>();
         mPieNormalRectF = new RectF();
-        mPieSelectRectF = new RectF();
+        mPieTmpRectF = new RectF();
 
         mPiePaint = new Paint();
         mPiePaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mPiePaint.setStyle(Paint.Style.FILL);
 
+        mHoleTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        mHoleTextPaint.setTextSize(mHoleTextSize);
+        mHoleTextPaint.setColor(mHoleTextColor);
+
         mPreTextRect = new Rect();
         mCurrentTextRect = new Rect();
-        mCurrentTextRectDown = new Rect();
         mFirstTextRect = new Rect();
 
         mLinePaint = new Paint();
@@ -263,13 +258,6 @@ public class PieGraph extends View {
         // 默认保留两位小数
         mDecimalFormat = new DecimalFormat("0.0000");
 
-        separationLinesPaint.setAntiAlias(true);
-        separationLinesPaint.setStyle(Paint.Style.STROKE);
-        separationLinesPaint.setStrokeWidth(4);
-        separationLinesPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        separationLinesPaint.setColor(Color.TRANSPARENT);
-        setLayerType(LAYER_TYPE_HARDWARE, null);
-
         mPathBuffer = new Path();
 
         mValueAnimator = ValueAnimator.ofFloat(0, 1.0f);
@@ -282,6 +270,9 @@ public class PieGraph extends View {
             }
         });
         mValueAnimator.setInterpolator(new OvershootInterpolator());
+
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+
     }
 
     /**
@@ -299,7 +290,11 @@ public class PieGraph extends View {
         mTextSize = a.getDimensionPixelSize(R.styleable.PieGraph_pie_text_size,
                 (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, DEFAULT_TEXT_SIZE_SP,
                         getResources().getDisplayMetrics()));
+        mHoleTextSize = a.getDimensionPixelSize(R.styleable.PieGraph_pie_hole_TextSize,
+                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, DEFAULT_TEXT_SIZE_SP,
+                        getResources().getDisplayMetrics()));
         mTextColor = a.getColor(R.styleable.PieGraph_pie_text_color, 0xff000000);
+        mHoleTextColor = a.getColor(R.styleable.PieGraph_pie_hole_TextColor, 0x7f000000);
         mIsDrawRatio = a.getBoolean(R.styleable.PieGraph_pie_show_radio, false);
         mMarkerLine1 = a.getDimensionPixelSize(R.styleable.PieGraph_pie_marker_line1,
                 (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_MARKER_LINE1_DP,
@@ -309,9 +304,6 @@ public class PieGraph extends View {
                         getResources().getDisplayMetrics()));
         mLineStroke = a.getDimensionPixelSize(R.styleable.PieGraph_pie_line_stroke,
                 (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_LINE_STROKE_DP,
-                        getResources().getDisplayMetrics()));
-        mLineTextMargin = a.getDimensionPixelSize(R.styleable.PieGraph_pie_line_text_distance,
-                (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_LINE_TEXT_MARGIN_DP,
                         getResources().getDisplayMetrics()));
         mLineMargin = a.getDimensionPixelSize(R.styleable.PieGraph_pie_line_circle_distance,
                 (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_LINE_MARGIN_DP,
@@ -328,8 +320,7 @@ public class PieGraph extends View {
         mTextPaint.setTextSize(mTextSize);
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         mTextHeight = fontMetrics.descent - fontMetrics.ascent;
-        mTextBottom = fontMetrics.bottom;
-        mLineFixLen = mTextPaint.measureText("34.9%") * 1.2f;
+        mTextCenterOffset = (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom;
     }
 
     /**
@@ -339,10 +330,8 @@ public class PieGraph extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, DEFAULT_PADDING,
                 getResources().getDisplayMetrics());
-        // 半径 + 选中的时候多出来的部分 + 半径延长线 + 文字的高度的一半（文字的高度一半是在外面的）+ 预留的padding
-//        int height = (int) ((mPieRadius + mSelectOffset + mMarkerLine1 + mTextHeight / 2 + padding) * 2);
-        // 半径 + 选中的时候多出来的部分 + 半径延长线 + 文字的高度+ 文字距离 + 线宽 + 预留的padding
-        int height = (int) ((mPieRadius + mSelectOffset + mMarkerLine1 + mTextHeight + mLineTextMargin + mLineStroke + mLineMargin + padding) * 2);
+        // 半径 + 选中的时候多出来的部分 + 半径延长线 + 文字的高度 + 预留的padding
+        int height = (int) ((mPieRadius + mSelectOffset + mMarkerLine1 + mTextHeight + mLineMargin + padding) * 2);
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), height);
 
     }
@@ -355,8 +344,34 @@ public class PieGraph extends View {
         super.onDraw(canvas);
         initPieRectF();
         drawPie(canvas);
-        drawSeparationLines(canvas);
-        drawText(canvas);
+        if (mAnimatedValue >= 1) {
+            drawRateText(canvas);
+        }
+        drawHole(canvas);
+    }
+
+    /**
+     * 画洞和洞里的文字
+     *
+     * @param canvas
+     */
+    private void drawHole(Canvas canvas) {
+        mPiePaint.setColor(Color.argb((int) (255 * 0.6f), 255, 255, 255));
+        canvas.drawCircle(mPieNormalRectF.centerX(), mPieNormalRectF.centerY(), mPieRadius * 0.55f, mPiePaint);
+        mPiePaint.setColor(Color.WHITE);
+        canvas.drawCircle(mPieNormalRectF.centerX(), mPieNormalRectF.centerY(), mPieRadius / 2, mPiePaint);
+        mPieTmpRectF.left = mPieNormalRectF.centerX() - mPieRadius / 2;
+        mPieTmpRectF.top = mPieNormalRectF.centerY() - mPieRadius / 2;
+        mPieTmpRectF.right = mPieNormalRectF.centerX() + mPieRadius / 2;
+        mPieTmpRectF.bottom = mPieNormalRectF.centerY() + mPieRadius / 2;
+
+        StaticLayout mpAndroidChart = new StaticLayout(mHoleText, mHoleTextPaint
+                , (int) (mPieTmpRectF.width() * 0.8f), Layout.Alignment.ALIGN_CENTER, 1, 1, false);
+        int height = mpAndroidChart.getHeight();
+        canvas.save();
+        canvas.translate(mPieNormalRectF.centerX() - mPieRadius / 2 * 0.8f, mPieTmpRectF.centerY() - height / 2);
+        mpAndroidChart.draw(canvas);
+        canvas.restore();
     }
 
     @Override
@@ -372,44 +387,6 @@ public class PieGraph extends View {
         mPieNormalRectF.top = getHeight() / 2 - mPieRadius;
         mPieNormalRectF.right = mPieNormalRectF.left + mPieRadius * 2;
         mPieNormalRectF.bottom = mPieNormalRectF.top + mPieRadius * 2;
-
-    }
-
-    private Paint separationLinesPaint = new Paint();
-
-    /**
-     * 画分割线
-     *
-     * @param canvas
-     */
-    private void drawSeparationLines(Canvas canvas) {
-        separationLinesPaint.setStrokeWidth(4 * mAnimatedValue);
-        float lastAngle = 0 + mRotate;
-        final float circleRadius = mPieNormalRectF.width() / 2f;
-        //小于等于1不画分割线
-        if (pieDataHolders.size() <= 1) {
-            return;
-        }
-        int count = 0;
-        for (PieDataHolder pieDataHolder : pieDataHolders) {
-            if (pieDataHolder.mValue > 0) {
-                count++;
-            }
-        }
-        //总有效数据小于1不画分割线
-        if (count <= 1) {
-            return;
-        }
-        for (PieDataHolder pieDataHolder : pieDataHolders) {
-            sliceVector.set((float) (Math.cos(Math.toRadians(lastAngle * mAnimatedValue))),
-                    (float) (Math.sin(Math.toRadians(lastAngle * mAnimatedValue))));
-            normalizeVector(sliceVector);
-
-            float x1 = sliceVector.x * (circleRadius + mSelectOffset) + mPieNormalRectF.centerX();
-            float y1 = sliceVector.y * (circleRadius + mSelectOffset) + mPieNormalRectF.centerY();
-            canvas.drawLine(mPieNormalRectF.centerX(), mPieNormalRectF.centerY(), x1, y1, separationLinesPaint);
-            lastAngle += pieDataHolder.mSweepAngel;
-        }
     }
 
     private void normalizeVector(PointF point) {
@@ -424,101 +401,116 @@ public class PieGraph extends View {
         if (pieDataHolders == null || pieDataHolders.size() <= 0) {
             return;
         }
-        float startAngel = mRotate;
+        float angle = 0;
         for (PieDataHolder pieDataHolder : pieDataHolders) {
             mPathBuffer.reset();
             mPiePaint.setColor(pieDataHolder.mColor);
-            if (pieDataHolder.mSweepAngel == 0) {
+            float sliceSpaceAngleOuter = 1.5f;
+            float sliceAngle = pieDataHolder.mSweepAngel;
+
+            if (pieDataHolder.mSweepAngel <= 1) {
                 // 0度的不画
                 continue;
             }
+            mPieTmpRectF.set(mPieNormalRectF);
             if (pieDataHolder.mIsSelect) {
                 // 选中的时候往外面拉出来一点
-                mPieSelectRectF.set(mPieNormalRectF);
-                mPieSelectRectF.top -= 10;
-                mPieSelectRectF.left -= 10;
-                mPieSelectRectF.bottom += 10;
-                mPieSelectRectF.right += 10;
-//                drawSelectPie(canvas, pieDataHolder);
-                canvas.drawArc(mPieSelectRectF, pieDataHolder.mStartAngel * mAnimatedValue + mRotate, pieDataHolder.mSweepAngel * mAnimatedValue, true, mPiePaint);
-            } else {
-                // 没有选中的时候正常画圆弧
-                mPathBuffer.reset();
-                startAngel -= 2;
-                float startX = (float) (mPieNormalRectF.centerX() + mPieRadius * Math.cos(Math.toRadians(startAngel)));
-                float startY = (float) (mPieNormalRectF.centerY() + mPieRadius * Math.sin(Math.toRadians(startAngel)));
-                mPathBuffer.moveTo(startX, startY);
-                mPathBuffer.addArc(mPieNormalRectF, startAngel * mAnimatedValue, mAnimatedValue * (pieDataHolder.mSweepAngel - 4));
-                float distance = (float) (Math.sin(Math.toRadians(4)) * mPieRadius / Math.sin(Math.toRadians(180 - (pieDataHolder.mSweepAngel - 4))));
-                float endX = (float) (mPieNormalRectF.centerX() + distance * Math.cos(Math.toRadians(startAngel)));
-                float endY = (float) (mPieNormalRectF.centerY() + distance * Math.sin(Math.toRadians(startAngel)));
-                mPathBuffer.lineTo(endX, endY);
-                mPathBuffer.close();
-                canvas.drawPath(mPathBuffer, mPiePaint);
-//                canvas.drawArc(mPieNormalRectF, pieDataHolder.mStartAngel * mAnimatedValue + mRotate, pieDataHolder.mSweepAngel * mAnimatedValue, true, mPiePaint);
+                mPieTmpRectF.top -= mSelectOffset;
+                mPieTmpRectF.left -= mSelectOffset;
+                mPieTmpRectF.bottom += mSelectOffset;
+                mPieTmpRectF.right += mSelectOffset;
             }
-            startAngel += pieDataHolder.mSweepAngel - 4;
+            mPathBuffer.reset();
+            final float startAngleOuter = mRotate + (angle + sliceSpaceAngleOuter / 2.f) * mAnimatedValue;
+            float sweepAngleOuter = (sliceAngle - sliceSpaceAngleOuter) * mAnimatedValue;
+            float startX = (float) (mPieTmpRectF.centerX() + mPieRadius * Math.cos(Math.toRadians(startAngleOuter)));
+            float startY = (float) (mPieTmpRectF.centerY() + mPieRadius * Math.sin(Math.toRadians(startAngleOuter)));
+            mPathBuffer.moveTo(startX, startY);
+
+            mPathBuffer.arcTo(
+                    mPieTmpRectF,
+                    startAngleOuter,
+                    sweepAngleOuter
+            );
+            float angleMiddle = startAngleOuter + sweepAngleOuter / 2.f;
+
+            float sliceSpaceOffset =
+                    calculateMinimumRadiusForSpacedSlice(
+                            mPieTmpRectF,
+                            mPieRadius,
+                            sliceAngle * mAnimatedValue,
+                            startX,
+                            startY,
+                            startAngleOuter,
+                            sweepAngleOuter);
+
+            float arcEndPointX = mPieTmpRectF.centerX() +
+                    sliceSpaceOffset * (float) Math.cos(Math.toRadians(angleMiddle));
+            float arcEndPointY = mPieTmpRectF.centerY() +
+                    sliceSpaceOffset * (float) Math.sin(Math.toRadians(angleMiddle));
+
+            mPathBuffer.lineTo(
+                    arcEndPointX,
+                    arcEndPointY);
+            mPathBuffer.close();
+            canvas.drawPath(mPathBuffer, mPiePaint);
+            angle += sliceAngle * mAnimatedValue;
         }
     }
 
-    /**
-     * 画选中那部分的饼状图，这里我们是要往外拉出来一部分的
-     */
-    private void drawSelectPie(Canvas canvas, PieDataHolder pieData) {
-        mPiePaint.setColor(pieData.mColor);
-        mPieSelectRectF.set(mPieNormalRectF);
-        // 找到圆弧一半的位置，要往这个方向拉出去
-        float middle = (pieData.mStartAngel + pieData.mSweepAngel / 2 + mRotate) % 360;
-        if (middle < 0) {
-            middle += 360;
-        }
-        if (middle <= 90) {
-            int top = (int) (Math.sin(Math.toRadians(middle)) * mSelectOffset);
-            int left = (int) (Math.cos(Math.toRadians(middle)) * mSelectOffset);
-            mPieSelectRectF.left += left;
-            mPieSelectRectF.right += left;
-            mPieSelectRectF.top += top;
-            mPieSelectRectF.bottom += top;
-        }
-        if (middle > 90 && middle <= 180) {
-            middle = 180 - middle;
-            int top = (int) (Math.sin(Math.toRadians(middle)) * mSelectOffset);
-            int left = (int) (Math.cos(Math.toRadians(middle)) * mSelectOffset);
-            mPieSelectRectF.left -= left;
-            mPieSelectRectF.right -= left;
-            mPieSelectRectF.top += top;
-            mPieSelectRectF.bottom += top;
-        }
-        if (middle > 180 && middle <= 270) {
-            middle = 270 - middle;
-            int left = (int) (Math.sin(Math.toRadians(middle)) * mSelectOffset);
-            int top = (int) (Math.cos(Math.toRadians(middle)) * mSelectOffset);
-            mPieSelectRectF.left -= left;
-            mPieSelectRectF.right -= left;
-            mPieSelectRectF.top -= top;
-            mPieSelectRectF.bottom -= top;
-        }
-        if (middle > 270 && middle <= 360) {
-            middle = 360 - middle;
-            int top = (int) (Math.sin(Math.toRadians(middle)) * mSelectOffset);
-            int left = (int) (Math.cos(Math.toRadians(middle)) * mSelectOffset);
-            mPieSelectRectF.left += left;
-            mPieSelectRectF.right += left;
-            mPieSelectRectF.top -= top;
-            mPieSelectRectF.bottom -= top;
-        }
-        canvas.drawArc(mPieSelectRectF, pieData.mStartAngel + mRotate, pieData.mSweepAngel, true, mPiePaint);
+
+    protected float calculateMinimumRadiusForSpacedSlice(
+            RectF center,
+            float radius,
+            float angle,
+            float arcStartPointX,
+            float arcStartPointY,
+            float startAngle,
+            float sweepAngle) {
+        final float angleMiddle = startAngle + sweepAngle / 2.f;
+
+        // Other point of the arc
+        float arcEndPointX = center.centerX() + radius * (float) Math.cos(Math.toRadians(startAngle + sweepAngle));
+        float arcEndPointY = center.centerY() + radius * (float) Math.sin(Math.toRadians(startAngle + sweepAngle));
+
+        // Middle point on the arc
+        float arcMidPointX = center.centerX() + radius * (float) Math.cos(Math.toRadians(angleMiddle));
+        float arcMidPointY = center.centerY() + radius * (float) Math.sin(Math.toRadians(angleMiddle));
+
+        // This is the base of the contained triangle
+        double basePointsDistance = Math.sqrt(
+                Math.pow(arcEndPointX - arcStartPointX, 2) +
+                        Math.pow(arcEndPointY - arcStartPointY, 2));
+
+        // After reducing space from both sides of the "slice",
+        //   the angle of the contained triangle should stay the same.
+        // So let's find out the height of that triangle.
+        float containedTriangleHeight = (float) (basePointsDistance / 2.0 *
+                Math.tan(Math.toRadians((180.0 - angle) / 2.0)));
+
+        // Now we subtract that from the radius
+        float spacedRadius = radius - containedTriangleHeight;
+
+        // And now subtract the height of the arc that's between the triangle and the outer circle
+        spacedRadius -= Math.sqrt(
+                Math.pow(arcMidPointX - (arcEndPointX + arcStartPointX) / 2.f, 2) +
+                        Math.pow(arcMidPointY - (arcEndPointY + arcStartPointY) / 2.f, 2));
+
+        return spacedRadius;
     }
 
     /**
      * 画文字
      */
-    private void drawText(Canvas canvas) {
+    private void drawRateText(Canvas canvas) {
         mCurrentTextRect.setEmpty();
         mPreTextRect.setEmpty();
         mFirstTextRect.setEmpty();
         for (int index = 0; index < pieDataHolders.size(); index++) {
             PieDataHolder pieDataHolder = pieDataHolders.get(index);
+            if (pieDataHolder.mSweepAngel <= 7) {
+                continue;
+            }
             if (tableMode == 1 && !pieDataHolder.mIsSelect) {
                 continue;
             }
@@ -528,7 +520,6 @@ public class PieGraph extends View {
                 // 没有比例的不画
                 continue;
             }
-//            String textMarker = String.format(Locale.getDefault(), "%.02f%s", pieDataHolder.mRatio * 100, "%");
             String accuracy = "%.0";
             if (pieDataHolder.mAccuracy != 0) {
                 accuracy = accuracy + pieDataHolder.mAccuracy + "f";
@@ -538,7 +529,6 @@ public class PieGraph extends View {
             String textMarker = String.format(accuracy, pieDataHolder.mValue);
             String TextDown = "";
             if (!mIsDrawRatio) {
-//                TextDown = pieDataHolder.mMarker;
                 TextDown = String.format(Locale.getDefault(), "%.01f%s", pieDataHolder.mRatio * 100, "%");
             }
             if (textMarker == null) {
@@ -583,64 +573,20 @@ public class PieGraph extends View {
             // 左边 右边的判断
             if (270f > middle && middle >= 90f) {
                 landLineX = x;
-                landLineXFix = landLineX - mLineFixLen;
+                landLineXFix = landLineX - mMarkerLine1;
             } else {
                 landLineX = x;
-                landLineXFix = landLineX + mLineFixLen;
+                landLineXFix = landLineX + mMarkerLine1;
             }
             linePath.lineTo(landLineXFix, y); // 画文字线先确认了
-            // 继续去确认文字的位置
+            canvas.drawCircle(startX, startY, mLineDot, mLineDotPaint);
+            canvas.drawPath(linePath, mLinePaint);
             if (270f > middle && middle >= 90f) {
-                // 圆的右边
-                // 文字的区域
-//                mCurrentTextRect.top = (int) (y - mTextHeight / 2);
-                mCurrentTextRect.top = (int) (y - mTextHeight - mLineTextMargin);
-                mCurrentTextRect.left = (int) (landLineX - mLineFixLen / 2);
-                mCurrentTextRect.bottom = (int) (mCurrentTextRect.top + mTextHeight - mLineTextMargin);
-                mCurrentTextRect.right = (int) (mCurrentTextRect.left + mLineFixLen / 2);
-
-                mCurrentTextRectDown.top = (int) (y + 5);
-                mCurrentTextRectDown.left = (int) (landLineX - mLineFixLen / 2);
-                mCurrentTextRectDown.bottom = (int) (mCurrentTextRect.top + mTextHeight + mLineTextMargin);
-                mCurrentTextRectDown.right = (int) (mCurrentTextRect.left + mLineFixLen / 2);
-
+                mTextPaint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText(TextDown, landLineXFix - mMarkerLine1 * 0.1f, y + mTextCenterOffset, mTextPaint);
             } else {
-                // 圆的左边
-                // 文字的区域
-//                mCurrentTextRect.top = (int) (y - mTextHeight / 2);
-                mCurrentTextRect.top = (int) (y - mTextHeight - mLineTextMargin);
-                mCurrentTextRect.left = (int) (landLineX + mLineFixLen / 2);
-                mCurrentTextRect.bottom = (int) (mCurrentTextRect.top + mTextHeight - mLineTextMargin);
-                mCurrentTextRect.right = (int) (mCurrentTextRect.left - mLineFixLen / 2);
-
-                mCurrentTextRectDown.top = (int) (y + mLineTextMargin);
-                mCurrentTextRectDown.left = (int) (landLineX + mLineFixLen / 2);
-                mCurrentTextRectDown.bottom = (int) (mCurrentTextRect.top + mTextHeight + mLineTextMargin);
-                mCurrentTextRectDown.right = (int) (mCurrentTextRect.left - mLineFixLen / 2);
-            }
-            if (index == 0) {
-                // 记录第一个
-                mFirstTextRect.set(mCurrentTextRect);
-            }
-            // 画线和文字 这里会去判断重叠的问题（这里有一点要注意就是当去画最后一个的时候，判断了两次不仅和前面的判断了还和第一个判断了）
-            if (index == pieDataHolders.size() - 1 && pieDataHolders.size() > 1) {
-//                if (mPreTextRect.isEmpty() || (!isCollisionWithRect(mPreTextRect, mCurrentTextRect) && !isCollisionWithRect(mFirstTextRect, mCurrentTextRect))) {
-                //画圆点
-                canvas.drawCircle(startX, startY, mLineDot, mLineDotPaint);
-                mPreTextRect.set(mCurrentTextRect);
-                canvas.drawPath(linePath, mLinePaint);
-                canvas.drawText(textMarker, mCurrentTextRect.left, mCurrentTextRect.top + mTextHeight - mTextBottom, mTextPaint);
-                canvas.drawText(TextDown, mCurrentTextRectDown.left, mCurrentTextRectDown.top + mTextHeight - mTextBottom, mTextPaint);
-//                }
-            } else {
-//                if (mPreTextRect.isEmpty() || !isCollisionWithRect(mPreTextRect, mCurrentTextRect)) {
-                //画圆点
-                canvas.drawCircle(startX, startY, mLineDot, mLineDotPaint);
-                mPreTextRect.set(mCurrentTextRect);
-                canvas.drawPath(linePath, mLinePaint);
-                canvas.drawText(textMarker, mCurrentTextRect.left, mCurrentTextRect.top + mTextHeight - mTextBottom, mTextPaint);
-                canvas.drawText(TextDown, mCurrentTextRectDown.left, mCurrentTextRectDown.top + mTextHeight - mTextBottom, mTextPaint);
-//                }
+                mTextPaint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText(TextDown, landLineXFix + mMarkerLine1 * 0.1f, y + mTextCenterOffset, mTextPaint);
             }
         }
     }
@@ -705,25 +651,6 @@ public class PieGraph extends View {
             preSum += pieDataHolder.mSweepAngel;
 
         }
-
-        //找到最长的子确认线长度
-
-
-        String maxLenStr = "";
-        for (PieDataHolder pieDataHolder : pieDataHolders) {
-            String accuracy = "%.0";
-            if (pieDataHolder.mAccuracy != 0) {
-                accuracy = accuracy + pieDataHolder.mAccuracy + "f";
-            } else {
-                accuracy = accuracy + "f";
-            }
-            String textMarker = String.format(accuracy, pieDataHolder.mValue);
-            if (textMarker.length() > maxLenStr.length()) {
-                maxLenStr = textMarker;
-            }
-        }
-        float len = mTextPaint.measureText(maxLenStr) * 1.2f;
-        mLineFixLen = mLineFixLen > len ? mLineFixLen : len;
         invalidate();
     }
 
@@ -905,6 +832,15 @@ public class PieGraph extends View {
             }
         }
         return null;
+    }
+
+    /**
+     * 设置洞里的文字
+     *
+     * @param holeText
+     */
+    private void setHoleText(String holeText) {
+        mHoleText = holeText;
     }
 
     /**
