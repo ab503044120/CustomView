@@ -15,6 +15,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -193,6 +194,7 @@ public class PieGraph extends View {
     private int mHoleTextColor;
     private int mHoleTextSize;
     private String mHoleText = "";
+    private GestureDetector mGestureDetector;
 
     /**
      * 选中监听
@@ -273,7 +275,9 @@ public class PieGraph extends View {
 
         setLayerType(LAYER_TYPE_HARDWARE, null);
 
+        mGestureDetector = new GestureDetector(getContext(), mSimpleOnGestureListener);
     }
+
 
     /**
      * 获取xml里面定义的属性
@@ -322,6 +326,63 @@ public class PieGraph extends View {
         mTextHeight = fontMetrics.descent - fontMetrics.ascent;
         mTextCenterOffset = (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom;
     }
+
+    private GestureDetector.SimpleOnGestureListener mSimpleOnGestureListener = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            mPreX = e.getX();
+            mPreY = e.getY();
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            // 这里我们去判断是否是点击事件
+            if (inCircle(e.getX(), e.getY())) {
+                int position = getHolderPositionByAngle(action2Angle(e.getX(), e.getY()));
+                clearHolderSelect(position);
+                PieDataHolder holder = getHolderByPosition(position);
+                if (holder != null) {
+                    holder.mIsSelect = !holder.mIsSelect;
+                }
+            } else {
+                // 不在圆内，清空掉以前的选择
+                clearHolderSelect(-1);
+            }
+            if (mListener != null) {
+                // 找出选中的那个
+                PieDataHolder holder = findSelectHolder();
+                if (holder == null) {
+                    mListener.onNoPieSelect();
+                } else {
+                    mListener.onPieSelect(holder);
+                }
+            }
+            invalidate();
+            return super.onSingleTapUp(e);
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            if (!inCircle(e2.getX(), e2.getY())) {
+                // 没有在园内 这个事件结束了，我们不要了
+                return false;
+            }
+            float offsetX = e2.getX() - mPreX;
+            float offsetY = e2.getY() - mPreY;
+            if (mCanRotate) {
+                if (!mDealMove) {
+                    mDealMove = true;
+                }
+                mRotate = mRotate + action2Angle(e2.getX(), e2.getY()) - action2Angle(mPreX, mPreY);
+                mPreX = e2.getX();
+                mPreY = e2.getY();
+                invalidate();
+            }
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+    };
 
     /**
      * 测量控件大小,这里宽度我们不测了，只是去测量高度，宽度直接用父控件传过来的大小
@@ -674,8 +735,8 @@ public class PieGraph extends View {
     /**
      * 放出一些事件来
      */
-    private float mPreX;
-    private float mPreY;
+    private float mPreX = -1;
+    private float mPreY = -1;
     private boolean mDealMove = false;
 
     @Override
@@ -694,60 +755,61 @@ public class PieGraph extends View {
             }
             return false;
         }
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mPreX = event.getX();
-                mPreY = event.getY();
-                mDealMove = false;
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                // 想让饼状图旋转起来
-                if (!inCircle(eventX, eventY)) {
-                    // 没有在园内 这个事件结束了，我们不要了
-                    mDealMove = false;
-                    return false;
-                }
-                float offsetX = eventX - mPreX;
-                float offsetY = eventY - mPreY;
-                if (mCanRotate && Math.sqrt(offsetX * offsetX + offsetY * offsetY) >= mTouchSlop) {
-                    if (!mDealMove) {
-                        mDealMove = true;
-                    }
-                    mRotate = mRotate + action2Angle(eventX, eventY) - action2Angle(mPreX, mPreY);
-                    mPreX = eventX;
-                    mPreY = eventY;
-                    invalidate();
-                }
-                return true;
-            case MotionEvent.ACTION_UP:
-                if (!mDealMove) {
-                    // 这里我们去判断是否是点击事件
-                    if (inCircle(eventX, eventY)) {
-                        int position = getHolderPositionByAngle(action2Angle(eventX, eventY));
-                        clearHolderSelect(position);
-                        PieDataHolder holder = getHolderByPosition(position);
-                        if (holder != null) {
-                            holder.mIsSelect = !holder.mIsSelect;
-                        }
-                    } else {
-                        // 不在圆内，清空掉以前的选择
-                        clearHolderSelect(-1);
-                    }
-                    if (mListener != null) {
-                        // 找出选中的那个
-                        PieDataHolder holder = findSelectHolder();
-                        if (holder == null) {
-                            mListener.onNoPieSelect();
-                        } else {
-                            mListener.onPieSelect(holder);
-                        }
-                    }
-                    invalidate();
-
-                }
-                break;
-        }
-        return true;
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                mPreX = event.getX();
+//                mPreY = event.getY();
+//                mDealMove = false;
+//                return true;
+//            case MotionEvent.ACTION_MOVE:
+//                // 想让饼状图旋转起来
+//                if (!inCircle(eventX, eventY)) {
+//                    // 没有在园内 这个事件结束了，我们不要了
+//                    mDealMove = false;
+//                    return false;
+//                }
+//                float offsetX = eventX - mPreX;
+//                float offsetY = eventY - mPreY;
+////                && Math.sqrt(offsetX * offsetX + offsetY * offsetY) >= mTouchSlop
+//                if (mCanRotate) {
+//                    if (!mDealMove) {
+//                        mDealMove = true;
+//                    }
+//                    mRotate = mRotate + action2Angle(eventX, eventY) - action2Angle(mPreX, mPreY);
+//                    mPreX = eventX;
+//                    mPreY = eventY;
+//                    invalidate();
+//                }
+//                return true;
+//            case MotionEvent.ACTION_UP:
+//                if (!mDealMove) {
+//                    // 这里我们去判断是否是点击事件
+//                    if (inCircle(eventX, eventY)) {
+//                        int position = getHolderPositionByAngle(action2Angle(eventX, eventY));
+//                        clearHolderSelect(position);
+//                        PieDataHolder holder = getHolderByPosition(position);
+//                        if (holder != null) {
+//                            holder.mIsSelect = !holder.mIsSelect;
+//                        }
+//                    } else {
+//                        // 不在圆内，清空掉以前的选择
+//                        clearHolderSelect(-1);
+//                    }
+//                    if (mListener != null) {
+//                        // 找出选中的那个
+//                        PieDataHolder holder = findSelectHolder();
+//                        if (holder == null) {
+//                            mListener.onNoPieSelect();
+//                        } else {
+//                            mListener.onPieSelect(holder);
+//                        }
+//                    }
+//                    invalidate();
+//
+//                }
+//                break;
+//        }
+        return mGestureDetector.onTouchEvent(event);
     }
 
     /**
