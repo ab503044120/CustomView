@@ -17,6 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ButtonTextActivity"/>
+        <activity android:name=".viewpager_recyclerview.ViewPagerHeaderRecyclerViewActivity"/>
+        <activity android:name=".collapsingtoolbarlayout.CollapsingToolbarLayoutActivity"/>
     </application>
 
 </manifest>
