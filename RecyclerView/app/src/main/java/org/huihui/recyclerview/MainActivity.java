@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         mStrings = new ArrayList<>();
         mStrings.add("GridRecyclerViewActivity");
         mStrings.add("MTActivity");
-        mStrings.add("CollapsingToolbarLayoutActivity");
+        mStrings.add("ItemDecorationActivity");
 
         rvcontent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvcontent.setAdapter(new RvAdapter());
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(new Intent(MainActivity.this, MTActivity.class));
                             break;
                         case 2:
-//                            startActivity(new Intent(MainActivity.this, CollapsingToolbarLayoutActivity.class));
+                            startActivity(new Intent(MainActivity.this, ItemDecorationActivity.class));
                             break;
                     }
                 }

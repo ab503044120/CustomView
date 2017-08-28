@@ -23,6 +23,7 @@ public class MTActivity extends AppCompatActivity {
     private android.support.v7.widget.RecyclerView rvrignt;
     private List<GoodsType> mGoodsTypes;
     private List<TypeBean> mTypeBeen;
+    private int mSelectedItem = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,7 +37,11 @@ public class MTActivity extends AppCompatActivity {
             for (int j = 0; j < Math.random() * 20; j++) {
                 goodses.add(new Goods("类型" + i + "的" + j));
             }
-            mGoodsTypes.add(new GoodsType("类型" + i, goodses));
+            GoodsType goodType = new GoodsType("类型" + i, goodses);
+            mGoodsTypes.add(goodType);
+            if (i == 0) {
+                goodType.isSelect = true;
+            }
         }
         mTypeBeen = new ArrayList<>();
         for (GoodsType goodsType : mGoodsTypes) {
@@ -61,16 +66,68 @@ public class MTActivity extends AppCompatActivity {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     int firstVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-
+                    int selectItem = findSelectItem(firstVisibleItemPosition);
+                    changeSelectItem(selectItem, true);
+                    rvleft.smoothScrollToPosition(selectItem);
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+                int firstVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                int selectItem = findSelectItem(firstVisibleItemPosition);
+                changeSelectItem(selectItem, false);
+                if (selectItem != -1) {
+                    rvleft.smoothScrollToPosition(selectItem);
+                }
             }
         });
+    }
 
+    /**
+     * 通过第一个view的位置确定左边列表应该滑到的位置
+     *
+     * @param position
+     * @return
+     */
+    public int findSelectItem(int position) {
+        for (GoodsType goodsType : mGoodsTypes) {
+            if (goodsType.mGoodses.size() + 1 > position) {
+                return mGoodsTypes.indexOf(goodsType);
+            } else {
+                position -= goodsType.mGoodses.size() + 1;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 通过应该滑动的位置确定应该滑到的位置
+     *
+     * @param position
+     * @param forceMove 强制滑动
+     * @return
+     */
+    public int changeSelectItem(int position, boolean forceMove) {
+        GoodsType goodsType = mGoodsTypes.get(position);
+        //如果位置没有改变那就不滑动
+        if (!forceMove && goodsType.isSelect) {
+            return -1;
+        }
+        mGoodsTypes.get(mSelectedItem).isSelect = false;
+        rvleft.getAdapter().notifyItemChanged(mSelectedItem);
+        mSelectedItem = position;
+        goodsType.isSelect = true;
+        rvleft.getAdapter().notifyItemChanged(mSelectedItem);
+        return position;
+    }
+
+    public int moveToPosition(int position) {
+        int movePosition = 0;
+        for (int i = 0; i < position; i++) {
+            movePosition += 1 + mGoodsTypes.get(i).mGoodses.size();
+        }
+        return movePosition;
     }
 
     public class LAdapter extends RecyclerView.Adapter {
@@ -88,9 +145,27 @@ public class MTActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             TextView tv = (TextView) holder.itemView.findViewById(R.id.tv_left);
+            View ll = holder.itemView.findViewById(R.id.ll_left);
+            if (mGoodsTypes.get(position).isSelect) {
+                ll.setBackgroundColor(0xfff0f0f0);
+            } else {
+                ll.setBackgroundColor(0xffffffff);
+            }
             tv.setText(mGoodsTypes.get(position).name);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    GoodsType goodsType = mGoodsTypes.get(mSelectedItem);
+                    goodsType.isSelect = false;
+                    rvleft.getAdapter().notifyItemChanged(mSelectedItem);
+                    mSelectedItem = position;
+                    mGoodsTypes.get(mSelectedItem).isSelect = true;
+                    rvleft.getAdapter().notifyItemChanged(mSelectedItem);
+                    rvrignt.scrollToPosition(moveToPosition(mSelectedItem));
+                }
+            });
 
         }
 

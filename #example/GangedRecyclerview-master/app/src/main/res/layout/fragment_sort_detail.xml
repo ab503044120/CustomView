@@ -2,15 +2,13 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:orientation="horizontal">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_right"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#f0f0f0"
-        android:gravity="center"
-        android:text="菜"
-        android:textSize="14sp"/>
+        android:background="@android:color/white">
+    </android.support.v7.widget.RecyclerView>
 </LinearLayout>
