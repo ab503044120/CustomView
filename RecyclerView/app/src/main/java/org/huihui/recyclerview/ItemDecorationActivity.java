@@ -58,7 +58,7 @@ public class ItemDecorationActivity extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(new RAdapter(mTypeBeen));
 //        rv.addItemDecoration(new SpaceDecoration(20));
-        rv.addItemDecoration(new PinSelectionDecoration(this));
+        rv.addItemDecoration(new PinSelectionDecoration(this, mGoodsTypes));
     }
 
     public class RAdapter extends RecyclerView.Adapter {

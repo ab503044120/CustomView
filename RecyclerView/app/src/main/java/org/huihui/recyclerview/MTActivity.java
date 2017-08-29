@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.huihui.recyclerview.itemdecoration.PinSelectionDecoration1;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +63,7 @@ public class MTActivity extends AppCompatActivity {
         rvleft.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvrignt.setLayoutManager(new LinearLayoutManager(this));
         rvrignt.setAdapter(new RAdapter(mTypeBeen));
+        rvrignt.addItemDecoration(new PinSelectionDecoration1(this,mGoodsTypes));
         rvrignt.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

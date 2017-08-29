@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.huihui.recyclerview.ItemDecorationActivity;
+import org.huihui.recyclerview.MTActivity;
 import org.huihui.recyclerview.R;
 
 import java.util.List;
@@ -17,11 +17,11 @@ import java.util.List;
  * Created by Administrator on 2017/8/28.
  */
 
-public class PinSelectionDecoration extends RecyclerView.ItemDecoration {
+public class PinSelectionDecoration1 extends RecyclerView.ItemDecoration {
 
-    private final List<ItemDecorationActivity.GoodsType> mGoodsTypes;
+    private final List<MTActivity.GoodsType> mGoodsTypes;
 
-    public PinSelectionDecoration(Context context, List<ItemDecorationActivity.GoodsType> goodsTypes) {
+    public PinSelectionDecoration1(Context context, List<MTActivity.GoodsType> goodsTypes) {
         mGoodsTypes = goodsTypes;
     }
 
@@ -31,7 +31,7 @@ public class PinSelectionDecoration extends RecyclerView.ItemDecoration {
         View child1 = parent.getChildAt(0);
         int childAdapterPosition1 = parent.getChildAdapterPosition(child1);
         int itemPosition = findItemPosition(childAdapterPosition1);
-        ItemDecorationActivity.GoodsType goodsType = mGoodsTypes.get(itemPosition);
+        MTActivity.GoodsType goodsType = mGoodsTypes.get(itemPosition);
         ((TextView) view.findViewById(R.id.tv_right)).setText(goodsType.name);
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         view.measure(View.MeasureSpec.makeMeasureSpec(layoutParams.width, View.MeasureSpec.EXACTLY)
@@ -47,7 +47,7 @@ public class PinSelectionDecoration extends RecyclerView.ItemDecoration {
     }
 
     public int findItemPosition(int position) {
-        for (ItemDecorationActivity.GoodsType goodsType : mGoodsTypes) {
+        for (MTActivity.GoodsType goodsType : mGoodsTypes) {
             if (goodsType.mGoodses.size() + 1 > position) {
                 return mGoodsTypes.indexOf(goodsType);
             }
@@ -60,7 +60,7 @@ public class PinSelectionDecoration extends RecyclerView.ItemDecoration {
         if (position == 0) {
             return false;
         }
-        for (ItemDecorationActivity.GoodsType goodsType : mGoodsTypes) {
+        for (MTActivity.GoodsType goodsType : mGoodsTypes) {
             if (goodsType.mGoodses.size() == position) {
                 return true;
             }
