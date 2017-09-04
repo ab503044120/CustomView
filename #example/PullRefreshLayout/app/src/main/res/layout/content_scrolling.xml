@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.yan.pullrefreshlayout.PullRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/refreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:prl_pullDownLimitDistance="200dp"
+    app:prl_pullUpLimitDistance="200dp"
+    tools:context="com.yan.refreshloadlayouttest.testactivity.ScrollingActivity"
+    tools:showIn="@layout/activity_scrolling">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
+</com.yan.pullrefreshlayout.PullRefreshLayout>

@@ -1,0 +1,26 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
+
+    <ImageView
+        android:layout_marginTop="8dp"
+        android:id="@+id/iv"
+        android:src="#eab566"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/id_num"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="160dp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="夏目友人帐"
+        android:textSize="18sp" />
+
+</android.support.v7.widget.CardView>
+
+
