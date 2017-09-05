@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.huihui.recyclerview.itemdecoration.MTLeftDecoration;
 import org.huihui.recyclerview.itemdecoration.PinSelectionDecoration1;
 
 import java.util.ArrayList;
@@ -26,11 +27,13 @@ public class MTActivity extends AppCompatActivity {
     private List<GoodsType> mGoodsTypes;
     private List<TypeBean> mTypeBeen;
     private int mSelectedItem = 0;
+    private TextView tvcart;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mt);
+        this.tvcart = (TextView) findViewById(R.id.tv_cart);
         this.rvrignt = (RecyclerView) findViewById(R.id.rv_rignt);
         this.rvleft = (RecyclerView) findViewById(R.id.rv_left);
         mGoodsTypes = new ArrayList<>();
@@ -61,9 +64,10 @@ public class MTActivity extends AppCompatActivity {
         rvleft.setLayoutManager(new LinearLayoutManager(this));
         rvleft.setAdapter(new LAdapter(mGoodsTypes));
         rvleft.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        rvleft.addItemDecoration(new MTLeftDecoration());
         rvrignt.setLayoutManager(new LinearLayoutManager(this));
         rvrignt.setAdapter(new RAdapter(mTypeBeen));
-        rvrignt.addItemDecoration(new PinSelectionDecoration1(this,mGoodsTypes));
+        rvrignt.addItemDecoration(new PinSelectionDecoration1(this, mGoodsTypes));
         rvrignt.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -85,6 +89,13 @@ public class MTActivity extends AppCompatActivity {
                 }
             }
         });
+        tvcart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
     }
 
     /**

@@ -2,6 +2,7 @@ package org.huihui.recyclerview.itemdecoration;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,18 @@ public class PinSelectionDecoration1 extends RecyclerView.ItemDecoration {
 
     public PinSelectionDecoration1(Context context, List<MTActivity.GoodsType> goodsTypes) {
         mGoodsTypes = goodsTypes;
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        super.getItemOffsets(outRect, view, parent, state);
+        int childAdapterPosition = parent.getChildAdapterPosition(view);
+        if (childAdapterPosition == parent.getAdapter().getItemCount() - 1) {
+            outRect.top = 0;
+            outRect.left = 0;
+            outRect.right = 0;
+            outRect.bottom = 80;
+        }
     }
 
     @Override
