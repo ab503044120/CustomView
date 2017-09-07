@@ -27,18 +27,33 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#df000000">
+        android:background="#df000000"
+        android:clickable="true">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/fl_list"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:layout_above="@+id/ll_bottom"
-            android:background="@android:color/white">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/ll_bottom">
 
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_list"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_gravity="bottom"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </android.support.v7.widget.RecyclerView>
+            </LinearLayout>
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/ll_bottom"

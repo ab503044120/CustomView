@@ -50,6 +50,7 @@ public class PinSelectionDecoration1 extends RecyclerView.ItemDecoration {
         view.measure(View.MeasureSpec.makeMeasureSpec(layoutParams.width, View.MeasureSpec.EXACTLY)
                 , View.MeasureSpec.makeMeasureSpec(layoutParams.height, View.MeasureSpec.EXACTLY));
         int bottom = child1.getBottom();
+        c.save();
         if (isGroupLastView(childAdapterPosition1) && (bottom - view.getMeasuredHeight()) < 0) {
             c.translate(0, bottom - view.getMeasuredHeight());
         }

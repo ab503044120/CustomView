@@ -1,14 +1,24 @@
 package org.huihui.recyclerview;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.huihui.recyclerview.itemdecoration.MTLeftDecoration;
@@ -28,11 +38,23 @@ public class MTActivity extends AppCompatActivity {
     private List<TypeBean> mTypeBeen;
     private int mSelectedItem = 0;
     private TextView tvcart;
+    private android.widget.LinearLayout lllist;
+    private android.widget.LinearLayout llbottom;
+    private GestureDetector mGestureDetector;
+    private android.widget.FrameLayout fllist;
+    private TranslateAnimation mShowAction;
+    private TranslateAnimation mHiddenAction;
+    private RecyclerView rv;
+    private ValueAnimator mValueAnimator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mt);
+        this.rv = (RecyclerView) findViewById(R.id.rv);
+        this.fllist = (FrameLayout) findViewById(R.id.fl_list);
+        this.llbottom = (LinearLayout) findViewById(R.id.ll_bottom);
+        this.lllist = (LinearLayout) findViewById(R.id.ll_list);
         this.tvcart = (TextView) findViewById(R.id.tv_cart);
         this.rvrignt = (RecyclerView) findViewById(R.id.rv_rignt);
         this.rvleft = (RecyclerView) findViewById(R.id.rv_left);
@@ -96,6 +118,55 @@ public class MTActivity extends AppCompatActivity {
             }
         });
 
+        mGestureDetector = new GestureDetector(this, new MTGeGestureListenr());
+        fllist.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
+                    listAdjust();
+                }
+                return mGestureDetector.onTouchEvent(event);
+            }
+        });
+
+        mShowAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+        mShowAction.setDuration(200);
+
+        mHiddenAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
+                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
+                1.0f);
+        mHiddenAction.setDuration(200);
+        tvcart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mValueAnimator!=null) {
+                    mValueAnimator.cancel();
+                }
+                mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0, -(lllist.getMeasuredHeight()));
+                mValueAnimator.start();
+
+            }
+        });
+//        rv.setAdapter(new TextAdapter());
+//        rv.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void listAdjust() {
+        if (mValueAnimator!=null) {
+            mValueAnimator.cancel();
+        }
+        if (lllist.getY() > (fllist.getMeasuredHeight() - lllist.getMeasuredHeight() / 2)) {
+            float v = fllist.getMeasuredHeight() - lllist.getY();
+            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0, v);
+            mValueAnimator.start();
+        } else {
+            float v = lllist.getY() - (fllist.getMeasuredHeight() - lllist.getMeasuredHeight());
+            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0, -v);
+            mValueAnimator.start();
+        }
     }
 
     /**
@@ -252,6 +323,37 @@ public class MTActivity extends AppCompatActivity {
 
         public Goods(String name) {
             this.name = name;
+        }
+    }
+
+    public class MTGeGestureListenr extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDown(MotionEvent e) {
+            if (e.getY() > lllist.getY()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            if (distanceY > 0) {
+                if (lllist.getY() == fllist.getMeasuredHeight() - lllist.getMeasuredHeight()) {
+                    return true;
+                }
+                Log.e("TAG", "before" + lllist.getY() + "     " + distanceY + "      " + fllist.getMeasuredHeight() + "      " + lllist.getMeasuredHeight());
+                if (lllist.getY() - distanceY < fllist.getMeasuredHeight() - lllist.getMeasuredHeight()) {
+                    float v = fllist.getMeasuredHeight() - lllist.getMeasuredHeight() - lllist.getY();
+                    Log.e("TAG", lllist.getY() + "     " + distanceY + "  " + v + "      " + fllist.getMeasuredHeight() + "      " + lllist.getMeasuredHeight());
+                    ViewCompat.offsetTopAndBottom(lllist, (int) v);
+                } else {
+                    ViewCompat.offsetTopAndBottom(lllist, (int) -distanceY);
+                }
+            } else {
+                ViewCompat.offsetTopAndBottom(lllist, (int) -distanceY);
+            }
+            return true;
         }
     }
 }
