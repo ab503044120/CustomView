@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,12 +14,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.huihui.recyclerview.adapter.TextAdapter;
 import org.huihui.recyclerview.itemdecoration.MTLeftDecoration;
 import org.huihui.recyclerview.itemdecoration.PinSelectionDecoration1;
 
@@ -42,8 +40,6 @@ public class MTActivity extends AppCompatActivity {
     private android.widget.LinearLayout llbottom;
     private GestureDetector mGestureDetector;
     private android.widget.FrameLayout fllist;
-    private TranslateAnimation mShowAction;
-    private TranslateAnimation mHiddenAction;
     private RecyclerView rv;
     private ValueAnimator mValueAnimator;
 
@@ -111,12 +107,6 @@ public class MTActivity extends AppCompatActivity {
                 }
             }
         });
-        tvcart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
         mGestureDetector = new GestureDetector(this, new MTGeGestureListenr());
         fllist.setOnTouchListener(new View.OnTouchListener() {
@@ -129,42 +119,37 @@ public class MTActivity extends AppCompatActivity {
             }
         });
 
-        mShowAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
-                1.0f, Animation.RELATIVE_TO_SELF, 0.0f);
-        mShowAction.setDuration(200);
-
-        mHiddenAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
-                0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF,
-                1.0f);
-        mHiddenAction.setDuration(200);
         tvcart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mValueAnimator!=null) {
+                if (mValueAnimator != null) {
                     mValueAnimator.cancel();
                 }
-                mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0, -(lllist.getMeasuredHeight()));
-                mValueAnimator.start();
+                if (lllist.getTranslationY() > 0) {
+                    mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", lllist.getMeasuredHeight(), 0f);
+                    mValueAnimator.start();
+                } else {
+                    mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0f, lllist.getMeasuredHeight());
+                    mValueAnimator.start();
+                }
+
 
             }
         });
-//        rv.setAdapter(new TextAdapter());
-//        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setAdapter(new TextAdapter());
+        rv.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void listAdjust() {
-        if (mValueAnimator!=null) {
+        if (mValueAnimator != null) {
             mValueAnimator.cancel();
         }
         if (lllist.getY() > (fllist.getMeasuredHeight() - lllist.getMeasuredHeight() / 2)) {
-            float v = fllist.getMeasuredHeight() - lllist.getY();
-            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0, v);
+            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", lllist.getTranslationY(), lllist.getMeasuredHeight());
             mValueAnimator.start();
         } else {
-            float v = lllist.getY() - (fllist.getMeasuredHeight() - lllist.getMeasuredHeight());
-            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0, -v);
+            Log.e("TAG", "preStart" + lllist.getTranslationY());
+            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", lllist.getTranslationY(), 0);
             mValueAnimator.start();
         }
     }
@@ -342,16 +327,15 @@ public class MTActivity extends AppCompatActivity {
                 if (lllist.getY() == fllist.getMeasuredHeight() - lllist.getMeasuredHeight()) {
                     return true;
                 }
-                Log.e("TAG", "before" + lllist.getY() + "     " + distanceY + "      " + fllist.getMeasuredHeight() + "      " + lllist.getMeasuredHeight());
                 if (lllist.getY() - distanceY < fllist.getMeasuredHeight() - lllist.getMeasuredHeight()) {
                     float v = fllist.getMeasuredHeight() - lllist.getMeasuredHeight() - lllist.getY();
-                    Log.e("TAG", lllist.getY() + "     " + distanceY + "  " + v + "      " + fllist.getMeasuredHeight() + "      " + lllist.getMeasuredHeight());
-                    ViewCompat.offsetTopAndBottom(lllist, (int) v);
+                    lllist.setTranslationY(lllist.getTranslationY() - v);
+
                 } else {
-                    ViewCompat.offsetTopAndBottom(lllist, (int) -distanceY);
+                    lllist.setTranslationY(lllist.getTranslationY() + distanceY);
                 }
             } else {
-                ViewCompat.offsetTopAndBottom(lllist, (int) -distanceY);
+                lllist.setTranslationY(lllist.getTranslationY() - distanceY);
             }
             return true;
         }

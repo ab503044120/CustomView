@@ -32,7 +32,7 @@ public class LauncherActivity extends AppCompatActivity {
         mStrings = new ArrayList<>();
         mStrings.add("底部滑出滑入动画");
         mStrings.add("仿淘宝动画集合");
-        mStrings.add("ItemDecorationActivity");
+        mStrings.add("属性动画基础");
 
         rvcontent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvcontent.setAdapter(new RvAdapter());
@@ -64,9 +64,9 @@ public class LauncherActivity extends AppCompatActivity {
                         case 1:
                             startActivity(new Intent(LauncherActivity.this, TaobaoActivity.class));
                             break;
-//                        case 2:
-//                            startActivity(new Intent(MainActivity.this, ItemDecorationActivity.class));
-//                            break;
+                        case 2:
+                            startActivity(new Intent(LauncherActivity.this, AnimatorBaseActivity.class));
+                            break;
                     }
                 }
             });
