@@ -28,7 +28,7 @@ public class TextAdapter extends RecyclerView.Adapter<TextAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return 20;
+        return 40;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

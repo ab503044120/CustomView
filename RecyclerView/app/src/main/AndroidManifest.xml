@@ -18,6 +18,7 @@
         <activity android:name=".GridRecyclerViewActivity"/>
         <activity android:name=".MTActivity"/>
         <activity android:name=".ItemDecorationActivity"/>
+        <activity android:name=".nestedscroll.NestScrollActivity"/>
     </application>
 
 </manifest>

@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import org.huihui.recyclerview.nestedscroll.NestScrollActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         mStrings.add("GridRecyclerViewActivity");
         mStrings.add("MTActivity");
         mStrings.add("ItemDecorationActivity");
+        mStrings.add("NestScrollActivity");
 
         rvcontent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvcontent.setAdapter(new RvAdapter());
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case 2:
                             startActivity(new Intent(MainActivity.this, ItemDecorationActivity.class));
+                            break;
+                        case 3:
+                            startActivity(new Intent(MainActivity.this, NestScrollActivity.class));
                             break;
                     }
                 }
