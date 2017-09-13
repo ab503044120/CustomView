@@ -54,7 +54,8 @@ public class NestedScrollingFrameLayout extends FrameLayout implements NestedScr
             }
         }
         if (mChild.getChildAdapterPosition(mChild.getChildAt(mChild.getChildCount() - 1)) == mChild.getAdapter().getItemCount() - 1) {
-            if (mChild.getChildAt(mChild.getChildCount() - 1).getBottom() + 2 == mChild.getMeasuredHeight() && dy > 0) {
+            if (mChild.getChildAt(mChild.getChildCount() - 1).getBottom() + mChild.getLayoutManager().getBottomDecorationHeight(mChild.getChildAt(mChild.getChildCount() - 1))
+                    == mChild.getMeasuredHeight() && dy > 0) {
                 mChild.setTranslationY(mChild.getTranslationY() - dy);
                 consumed[1] = dy;
             }
