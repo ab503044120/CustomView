@@ -1,23 +1,25 @@
 package org.huihui.recyclerview;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+import android.animation.ArgbEvaluator;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.huihui.recyclerview.MTActivity.Goods;
+import org.huihui.recyclerview.MTActivity.GoodsType;
+import org.huihui.recyclerview.MTActivity.TypeBean;
 import org.huihui.recyclerview.adapter.TextAdapter;
 import org.huihui.recyclerview.itemdecoration.MTLeftDecoration;
 import org.huihui.recyclerview.itemdecoration.PinSelectionDecoration1;
@@ -29,28 +31,30 @@ import java.util.List;
  * Created by huihui on 2017/8/26.
  */
 
-public class MTActivity extends AppCompatActivity {
-    private android.support.v7.widget.RecyclerView rvleft;
-    private android.support.v7.widget.RecyclerView rvrignt;
-    private List<GoodsType> mGoodsTypes;
-    private List<TypeBean> mTypeBeen;
+public class MTCoordinateActivity extends AppCompatActivity {
+
+    private RecyclerView rvleft;
+    private RecyclerView rvrignt;
+    private List<MTActivity.GoodsType> mGoodsTypes;
+    private List<MTActivity.TypeBean> mTypeBeen;
     private int mSelectedItem = 0;
     private TextView tvcart;
-    private android.widget.LinearLayout lllist;
-    private android.widget.LinearLayout llbottom;
-    private GestureDetector mGestureDetector;
-    private android.widget.FrameLayout fllist;
     private RecyclerView rv;
-    private ValueAnimator mValueAnimator;
+    private TextView tvyidian;
+    private android.support.design.widget.CoordinatorLayout cl;
+    private android.widget.LinearLayout llbottom;
+    private LinearLayout llcart;
+    private BottomSheetBehavior<LinearLayout> mBottomSheetBehavior;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mt);
-        this.rv = (RecyclerView) findViewById(R.id.rv);
-        this.fllist = (FrameLayout) findViewById(R.id.fl_list);
+        setContentView(R.layout.activity_mt_coordinate);
+        this.llcart = (LinearLayout) findViewById(R.id.ll_cart);
         this.llbottom = (LinearLayout) findViewById(R.id.ll_bottom);
-        this.lllist = (LinearLayout) findViewById(R.id.ll_list);
+        this.cl = (CoordinatorLayout) findViewById(R.id.cl);
+        this.tvyidian = (TextView) findViewById(R.id.tv_yidian);
+        this.rv = (RecyclerView) findViewById(R.id.rv);
         this.tvcart = (TextView) findViewById(R.id.tv_cart);
         this.rvrignt = (RecyclerView) findViewById(R.id.rv_rignt);
         this.rvleft = (RecyclerView) findViewById(R.id.rv_left);
@@ -107,51 +111,42 @@ public class MTActivity extends AppCompatActivity {
                 }
             }
         });
+        mBottomSheetBehavior = BottomSheetBehavior.from(llcart);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            private ArgbEvaluator mArgbEvaluator = new ArgbEvaluator();
 
-        mGestureDetector = new GestureDetector(this, new MTGeGestureListenr());
-        fllist.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP) {
-                    listAdjust();
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if (slideOffset > 0) {
+                    cl.setBackgroundColor((Integer) mArgbEvaluator.evaluate(slideOffset, new Integer(0x00000000), new Integer(0xdf000000)));
                 }
-                return mGestureDetector.onTouchEvent(event);
             }
         });
-
+        cl.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                return false;
+            }
+        });
         tvcart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mValueAnimator != null) {
-                    mValueAnimator.cancel();
-                }
-                if (lllist.getTranslationY() > 0) {
-                    mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", lllist.getMeasuredHeight(), 0f);
-                    mValueAnimator.start();
+                if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    cl.setVisibility(View.VISIBLE);
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 } else {
-                    mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", 0f, lllist.getMeasuredHeight());
-                    mValueAnimator.start();
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
-
-
             }
         });
         rv.setAdapter(new TextAdapter());
         rv.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    private void listAdjust() {
-        if (mValueAnimator != null) {
-            mValueAnimator.cancel();
-        }
-        if (lllist.getY() > (fllist.getMeasuredHeight() - lllist.getMeasuredHeight() / 2)) {
-            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", lllist.getTranslationY(), lllist.getMeasuredHeight());
-            mValueAnimator.start();
-        } else {
-            Log.e("TAG", "preStart" + lllist.getTranslationY());
-            mValueAnimator = ObjectAnimator.ofFloat(lllist, "translationY", lllist.getTranslationY(), 0);
-            mValueAnimator.start();
-        }
     }
 
     /**
@@ -282,62 +277,6 @@ public class MTActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return mTypeBeen.size();
-        }
-    }
-
-    public static class TypeBean {
-        public int type;
-        public String name;
-        public Goods mGoods;
-
-    }
-
-    public static class GoodsType {
-        public boolean isSelect;
-        public String name;
-        public List<Goods> mGoodses;
-
-        public GoodsType(String name, List<Goods> goodses) {
-            this.name = name;
-            mGoodses = goodses;
-        }
-    }
-
-    public static class Goods {
-        public String name;
-
-        public Goods(String name) {
-            this.name = name;
-        }
-    }
-
-    public class MTGeGestureListenr extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onDown(MotionEvent e) {
-            if (e.getY() > lllist.getY()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (distanceY > 0) {
-                if (lllist.getY() == fllist.getMeasuredHeight() - lllist.getMeasuredHeight()) {
-                    return true;
-                }
-                if (lllist.getY() - distanceY < fllist.getMeasuredHeight() - lllist.getMeasuredHeight()) {
-                    float v = fllist.getMeasuredHeight() - lllist.getMeasuredHeight() - lllist.getY();
-                    lllist.setTranslationY(lllist.getTranslationY() - v);
-
-                } else {
-                    lllist.setTranslationY(lllist.getTranslationY() + distanceY);
-                }
-            } else {
-                lllist.setTranslationY(lllist.getTranslationY() - distanceY);
-            }
-            return true;
         }
     }
 }

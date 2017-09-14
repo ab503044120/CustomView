@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import org.huihui.cordinatorlayoutdemo.bottomsheet.BottomSheetActivity;
 import org.huihui.cordinatorlayoutdemo.collapsingtoolbarlayout.CollapsingToolbarLayoutActivity;
 import org.huihui.cordinatorlayoutdemo.viewpager_recyclerview.ViewPagerHeaderRecyclerViewActivity;
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mStrings.add("按钮文字");
         mStrings.add("viewpager_recyclerview_header");
         mStrings.add("CollapsingToolbarLayoutActivity");
+        mStrings.add("BottomSheetActivity");
 
         rvContent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvContent.setAdapter(new RvAdapter());
@@ -72,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case 2:
                             startActivity(new Intent(MainActivity.this, CollapsingToolbarLayoutActivity.class));
+                            break;
+                        case 3:
+                            startActivity(new Intent(MainActivity.this, BottomSheetActivity.class));
                             break;
                     }
                 }

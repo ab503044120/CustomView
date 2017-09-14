@@ -54,6 +54,7 @@ public class DragFramlayout extends FrameLayout {
         @Override
         public void onEdgeDragStarted(int edgeFlags, int pointerId) {
             super.onEdgeDragStarted(edgeFlags, pointerId);
+            mViewDragHelper.captureChildView(getChildAt(0), pointerId);
         }
 
         @Override
@@ -61,14 +62,16 @@ public class DragFramlayout extends FrameLayout {
             return super.getOrderedChildIndex(index);
         }
 
+        //这里大于0就好了,用于当子控件拦截down事件之后,在move事件中重新拦截
         @Override
         public int getViewHorizontalDragRange(View child) {
-            return super.getViewHorizontalDragRange(child);
+            return 100;
         }
 
+        //这里大于0就好了
         @Override
         public int getViewVerticalDragRange(View child) {
-            return super.getViewVerticalDragRange(child);
+            return 100;
         }
 
         @Override
@@ -93,6 +96,7 @@ public class DragFramlayout extends FrameLayout {
     public DragFramlayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mViewDragHelper = ViewDragHelper.create(this, mCallback);
+        mViewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_TOP);
     }
 
     @Override
@@ -104,5 +108,12 @@ public class DragFramlayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return mViewDragHelper.shouldInterceptTouchEvent(ev);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        View childAt = getChildAt(0);
+        childAt.layout(0, -childAt.getMeasuredHeight(), childAt.getMeasuredWidth(), 0);
     }
 }

@@ -19,6 +19,8 @@
         <activity android:name=".ButtonTextActivity"/>
         <activity android:name=".viewpager_recyclerview.ViewPagerHeaderRecyclerViewActivity"/>
         <activity android:name=".collapsingtoolbarlayout.CollapsingToolbarLayoutActivity"/>
+        <activity android:name=".custom_behavior.CustomBehaviorActivity"/>
+        <activity android:name=".bottomsheet.BottomSheetActivity"/>
     </application>
 
 </manifest>

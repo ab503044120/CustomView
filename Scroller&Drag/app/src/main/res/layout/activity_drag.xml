@@ -5,29 +5,43 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/v"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/holo_purple"
+        android:clickable="true"/>
+
     <TextView
+        android:id="@+id/tv1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/holo_blue_dark"
+        android:clickable="true"
         android:padding="10dp"
         android:text="01"
         android:textSize="19sp"/>
 
     <TextView
+        android:id="@+id/tv2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@android:color/holo_red_dark"
+        android:clickable="true"
         android:padding="10dp"
         android:text="02"
         android:textSize="19sp"/>
 
     <TextView
+        android:id="@+id/tv3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@android:color/holo_green_light"
+        android:clickable="true"
         android:padding="10dp"
         android:text="03"
         android:textSize="19sp"/>
+
 </org.huihui.scrollerdrag.DragFramlayout>
