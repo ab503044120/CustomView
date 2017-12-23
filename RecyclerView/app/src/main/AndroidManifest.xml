@@ -20,6 +20,7 @@
         <activity android:name=".ItemDecorationActivity"/>
         <activity android:name=".nestedscroll.NestScrollActivity"/>
         <activity android:name=".MTCoordinateActivity"/>
+        <activity android:name=".SnapHelperActivity"/>
     </application>
 
 </manifest>

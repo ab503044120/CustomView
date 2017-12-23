@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="OvalView">
+        <attr name="boderWidth" format="dimension"/>
+        <attr name="boderColor" format="color"/>
+    </declare-styleable>
+</resources>

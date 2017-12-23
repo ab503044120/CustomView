@@ -2,6 +2,7 @@ package com.unibroad.ovalview;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -27,6 +28,8 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
 
     private ValueAnimator mValueAnimator;
     private float mAnimatedValue;
+    private float mBorderWidth;
+    private int mBorderColorColor;
 
 
     public OvalView(Context context) {
@@ -39,14 +42,22 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
 
     public OvalView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setLayerType(LAYER_TYPE_HARDWARE, null);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.OvalView, defStyle, 0);
+        mBorderWidth = a.getDimension(R.styleable.OvalView_boderWidth, 10);
+        mBorderColorColor = a.getColor(R.styleable.OvalView_boderColor, 0x00000000);
+        a.recycle();
 
+        setLayerType(LAYER_TYPE_HARDWARE, null);
         mValueAnimator = ValueAnimator.ofFloat(0.0f, 359.0f);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mAnimatedValue = ((float) animation.getAnimatedValue());
-                ((OvalDrawable) getDrawable()).updateShaderMatrix();
+
+                Drawable drawable = getDrawable();
+                if (drawable != null) {
+                    ((OvalDrawable) drawable).updateShaderMatrix();
+                }
                 invalidate();
             }
         });
@@ -56,9 +67,35 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
         mValueAnimator.setDuration(10000);
     }
 
+    /**
+     * 开启动画
+     */
+    public void start() {
+        mValueAnimator.setFloatValues(mAnimatedValue + 0.0f, mAnimatedValue + 359.0f);
+        mValueAnimator.start();
+    }
+
+    /**
+     * 停止动画
+     */
+    public void stop() {
+        mValueAnimator.cancel();
+    }
+
+    /**
+     * 重置旋转角度
+     */
+    public void reset() {
+        mAnimatedValue = 0;
+        if (getDrawable() != null && getDrawable() instanceof OvalDrawable) {
+            ((OvalDrawable) getDrawable()).updateShaderMatrix();
+        }
+        invalidate();
+    }
+
     @Override
     public void setImageDrawable(@Nullable Drawable drawable) {
-        super.setImageDrawable(new OvalDrawable(drawable));
+        super.setImageDrawable(new OvalDrawable(drawable, mBorderWidth, mBorderColorColor));
     }
 
     @Override
@@ -72,9 +109,9 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
         }
 
         Bitmap bitmap;
-        int width = Math.max(drawable.getIntrinsicWidth(), 2);
-        int height = Math.max(drawable.getIntrinsicHeight(), 2);
         try {
+            int width = Math.max(drawable.getIntrinsicWidth(), 2);
+            int height = Math.max(drawable.getIntrinsicHeight(), 2);
             bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -90,7 +127,6 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        mValueAnimator.start();
     }
 
     public class OvalDrawable extends Drawable {
@@ -98,7 +134,7 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
         private ScaleType mScaleType = ScaleType.CENTER_CROP;
         private RectF mBorderRect = new RectF();
         private RectF mBounds = new RectF();
-        private int mBorderWidth;
+        private float mBorderWidth;
         private Matrix mShaderMatrix = new Matrix();
         private float mBitmapHeight;
         private float mBitmapWidth;
@@ -106,22 +142,38 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
         private RectF mDrawableRect = new RectF();
 
         private Paint mPaint;
+        private Paint mPaint1;
+        private int mBorderColorColor;
 
-        public OvalDrawable(Bitmap bitmap) {
+        public OvalDrawable(Bitmap bitmap, float borderWidth, int borderColorColor) {
+            if (bitmap == null) {
+                return;
+            }
+            mBorderWidth = borderWidth;
+            mBorderColorColor = borderColorColor;
             mBitmap = bitmap;
             mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint1 = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mPaint1.setColor(mBorderColorColor);
+            mPaint1.setStyle(Paint.Style.FILL);
+
             mBitmapHeight = bitmap.getHeight();
             mBitmapWidth = bitmap.getWidth();
         }
 
-        public OvalDrawable(Drawable drawable) {
-            this(drawableToBitmap(drawable));
+        public OvalDrawable(Drawable drawable, float borderWidth, int borderColorColor) {
+            this(drawableToBitmap(drawable), borderWidth, borderColorColor);
         }
 
         @Override
         public void draw(@NonNull Canvas canvas) {
-             mPaint.getShader().setLocalMatrix(mShaderMatrix);
+            if (mBitmap == null) {
+                return;
+            }
+            mPaint.getShader().setLocalMatrix(mShaderMatrix);
+            canvas.drawOval(mBounds, mPaint1);
             canvas.drawOval(mDrawableRect, mPaint);
         }
 
@@ -142,6 +194,9 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
 
         @Override
         protected void onBoundsChange(Rect bounds) {
+            if (mBitmap == null) {
+                return;
+            }
             mBounds.set(bounds);
             updateShaderMatrix();
             BitmapShader shader = new BitmapShader(mBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
@@ -150,6 +205,9 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
         }
 
         private void updateShaderMatrix() {
+            if (mBitmap == null) {
+                return;
+            }
             float scale;
             float dx;
             float dy;
@@ -166,7 +224,11 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
 
                 case CENTER_CROP:
                     mBorderRect.set(mBounds);
-                    mBorderRect.inset(mBorderWidth / 2, mBorderWidth / 2);
+                    if (mBorderRect.width() > mBorderRect.height()) {
+                        mBorderRect.inset(mBorderWidth / 2 * mBorderRect.width() / mBorderRect.height(), mBorderWidth / 2);
+                    } else {
+                        mBorderRect.inset(mBorderWidth / 2, mBorderWidth / 2 * mBorderRect.height() / mBorderRect.width());
+                    }
 
                     mShaderMatrix.reset();
 
@@ -174,17 +236,22 @@ public class OvalView extends android.support.v7.widget.AppCompatImageView {
                     dy = 0;
 
                     if (mBitmapWidth * mBorderRect.height() > mBorderRect.width() * mBitmapHeight) {
-                        scale = mBorderRect.height() / (float) mBitmapHeight;
+                        scale = mBorderRect.height() / mBitmapHeight;
                         dx = (mBorderRect.width() - mBitmapWidth * scale) * 0.5f;
                     } else {
-                        scale = mBorderRect.width() / (float) mBitmapWidth;
+                        scale = mBorderRect.width() / mBitmapWidth;
                         dy = (mBorderRect.height() - mBitmapHeight * scale) * 0.5f;
                     }
-                    mShaderMatrix.setRotate(mAnimatedValue, mBitmapWidth / 2, mBitmapHeight / 2);
-                    mShaderMatrix.postScale(scale, scale);
+                    mShaderMatrix.setScale(scale, scale);
 
-                    mShaderMatrix.postTranslate((int) (dx + 0.5f) + mBorderWidth / 2,
-                            (int) (dy + 0.5f) + mBorderWidth / 2);
+                    mShaderMatrix.postTranslate(dx + mBorderWidth / 2,
+                            dy + mBorderWidth / 2);
+                    mShaderMatrix.postRotate(mAnimatedValue, mBounds.width() / 2, mBounds.height() / 2);
+                    if (mBorderRect.width() > mBorderRect.height()) {
+                        mShaderMatrix.postScale(mBorderRect.width() / mBorderRect.height(), 1, mBounds.width() / 2, mBounds.height() / 2);
+                    } else {
+                        mShaderMatrix.postScale(1, mBorderRect.height() / mBorderRect.width(), mBounds.width() / 2, mBounds.height() / 2);
+                    }
                     break;
 
                 case CENTER_INSIDE:

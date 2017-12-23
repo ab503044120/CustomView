@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         mStrings.add("ItemDecorationActivity");
         mStrings.add("NestScrollActivity");
         mStrings.add("MTCoordinateActivity");
+        mStrings.add("snaphelp");
 
         rvcontent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvcontent.setAdapter(new RvAdapter());
@@ -71,8 +72,12 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case 3:
                             startActivity(new Intent(MainActivity.this, NestScrollActivity.class));
-                            break;     case 4:
+                            break;
+                        case 4:
                             startActivity(new Intent(MainActivity.this, MTCoordinateActivity.class));
+                            break;
+                        case 5:
+                            startActivity(new Intent(MainActivity.this, SnapHelperActivity.class));
                             break;
                     }
                 }
