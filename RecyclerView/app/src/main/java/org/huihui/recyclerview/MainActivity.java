@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         mStrings.add("NestScrollActivity");
         mStrings.add("MTCoordinateActivity");
         mStrings.add("snaphelp");
+        mStrings.add("RecycleViewWeightTestActivity");
 
         rvcontent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvcontent.setAdapter(new RvAdapter());
@@ -78,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case 5:
                             startActivity(new Intent(MainActivity.this, SnapHelperActivity.class));
+                            break;
+                        case 6:
+                            startActivity(new Intent(MainActivity.this, RecycleViewWeightTestActivity.class));
                             break;
                     }
                 }

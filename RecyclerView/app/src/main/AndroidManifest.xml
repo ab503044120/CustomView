@@ -21,6 +21,7 @@
         <activity android:name=".nestedscroll.NestScrollActivity"/>
         <activity android:name=".MTCoordinateActivity"/>
         <activity android:name=".SnapHelperActivity"/>
+        <activity android:name=".RecycleViewWeightTestActivity"/>
     </application>
 
 </manifest>
