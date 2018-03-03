@@ -10,6 +10,7 @@ import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Scroller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class TableView extends View {
     private GestureDetector mGestureDetector;
     private float mTranslateX = 0;
     private float mTranslateY = 0;
+    private Scroller scroller;
 
     public TableView(Context context) {
         this(context, null);
@@ -42,7 +44,9 @@ public class TableView extends View {
     public TableView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mPaint = new Paint();
+        scroller = new Scroller(getContext());
         mGestureDetector = new GestureDetector(getContext(), mListener);
+
     }
 
     public void setData(List<String> tab, List<List<String>> datas) {
@@ -108,7 +112,7 @@ public class TableView extends View {
                 mPaint.reset();
                 mPaint.setStyle(Paint.Style.STROKE);
                 mPaint.setColor(Color.GRAY);
-                mPaint.setStrokeWidth(1);
+                mPaint.setStrokeWidth(5);
                 canvas.drawRect(mTmpRect, mPaint);
                 mPaint.reset();
                 mPaint.setColor(Color.BLACK);
@@ -135,7 +139,7 @@ public class TableView extends View {
                     mPaint.reset();
                     mPaint.setStyle(Paint.Style.STROKE);
                     mPaint.setColor(Color.GRAY);
-                    mPaint.setStrokeWidth(1);
+                    mPaint.setStrokeWidth(5);
                     canvas.drawRect(mTmpRect, mPaint);
                     mPaint.reset();
                     mPaint.setColor(Color.BLACK);
@@ -164,8 +168,9 @@ public class TableView extends View {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-
-            return super.onFling(e1, e2, velocityX, velocityY);
+            scroller.fling(0, 0, (int) velocityX, (int) velocityY,
+                    -50000, 50000, -50000, 50000);
+            return true;
         }
 
         @Override
@@ -197,6 +202,37 @@ public class TableView extends View {
             return true;
         }
     };
+    private int lastX;
+    private int lastY;
+
+    @Override
+    public void computeScroll() {
+        if (scroller.computeScrollOffset()) {
+            mTranslateX -= distanceX;
+            if (mTranslateX >= 0) {
+                mTranslateX = 0;
+            }
+            if (mScaleRect.right <= mShowRect.right) {
+                mTranslateX = 0;
+            } else {
+                if (mTranslateX <= -(mScaleRect.right - mShowRect.right)) {
+                    mTranslateX = -(mScaleRect.right - mShowRect.right);
+                }
+            }
+
+            mTranslateY -= distanceY;
+            if (mTranslateY >= 0) {
+                mTranslateY = 0;
+            }
+            if (mScaleRect.bottom <= mShowRect.bottom) {
+                mTranslateY = 0;
+            } else {
+                if (mTranslateY <= -(mScaleRect.bottom - mShowRect.bottom)) {
+                    mTranslateY = -(mScaleRect.bottom - mShowRect.bottom);
+                }
+            }
+        }
+    }
 
     public boolean inshowRange(RectF rectf) {
         return RectF.intersects(mShowRect, rectf);
