@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -94,7 +95,7 @@ public class TableView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mTab == null || mDatas == null) {
+        if (mTab == null) {
             return;
         }
         canvas.save();
@@ -122,6 +123,9 @@ public class TableView extends View {
             }
         }
         canvas.restore();
+        if (mDatas == null) {
+            return;
+        }
         canvas.save();
         float top = mTranslateY;
         canvas.clipRect(mShowRect.left, columeHeight, mShowRect.right, mShowRect.bottom);
@@ -163,16 +167,42 @@ public class TableView extends View {
     private GestureDetector.SimpleOnGestureListener mListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onDown(MotionEvent e) {
+            scroller.abortAnimation();
             return true;
         }
 
+        /**
+         *
+         * @param e1
+         * @param e2
+         * @param velocityX 沿着x方向为正
+         * @param velocityY 沿着y方向为正
+         * @return
+         */
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            scroller.fling(0, 0, (int) velocityX, (int) velocityY,
-                    -50000, 50000, -50000, 50000);
+            Log.e("scroller", "start");
+            lastX = 0;
+            lastY = 0;
+            if (Math.abs(velocityX) > Math.abs(velocityY)) {
+                scroller.fling(0, 0, (int) velocityX, 0,
+                        -50000, 50000, -50000, 50000);
+            } else {
+                scroller.fling(0, 0, 0, (int) velocityY,
+                        -50000, 50000, -50000, 50000);
+            }
+
             return true;
         }
 
+        /**
+         *
+         * @param e1
+         * @param e2
+         * @param distanceX 沿着x方向为负
+         * @param distanceY 沿着y方向为负
+         * @return
+         */
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             mTranslateX -= distanceX;
@@ -208,7 +238,10 @@ public class TableView extends View {
     @Override
     public void computeScroll() {
         if (scroller.computeScrollOffset()) {
-            mTranslateX -= distanceX;
+            int currX = scroller.getCurrX();
+            mTranslateX += currX - lastX;
+
+            lastX = currX;
             if (mTranslateX >= 0) {
                 mTranslateX = 0;
             }
@@ -219,8 +252,9 @@ public class TableView extends View {
                     mTranslateX = -(mScaleRect.right - mShowRect.right);
                 }
             }
-
-            mTranslateY -= distanceY;
+            int currY = scroller.getCurrY();
+            mTranslateY += currY - lastX;
+            lastY = currY;
             if (mTranslateY >= 0) {
                 mTranslateY = 0;
             }
@@ -231,6 +265,7 @@ public class TableView extends View {
                     mTranslateY = -(mScaleRect.bottom - mShowRect.bottom);
                 }
             }
+            invalidate();
         }
     }
 
