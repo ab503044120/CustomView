@@ -18,6 +18,7 @@
         </activity>
         <activity android:name=".ScrollerActivity"/>
         <activity android:name=".DragActivity"/>
+        <activity android:name=".DrawerLayoutActivity"/>
     </application>
 
 </manifest>

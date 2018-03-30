@@ -29,11 +29,11 @@ public class MainActivity extends AppCompatActivity {
         mStrings = new ArrayList<>();
         mStrings.add("ScrollerActivity");
         mStrings.add("DragActivity");
-        mStrings.add("ItemDecorationActivity");
-        mStrings.add("NestScrollActivity");
+        mStrings.add("DrawerLayoutActivity");
 
         rvcontent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvcontent.setAdapter(new RvAdapter());
+        new DrawerFrameLayout(this);
 
     }
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(new Intent(MainActivity.this, DragActivity.class));
                             break;
                         case 2:
-//                            startActivity(new Intent(MainActivity.this, ItemDecorationActivity.class));
+                            startActivity(new Intent(MainActivity.this, DrawerLayoutActivity.class));
                             break;
                         case 3:
 //                            startActivity(new Intent(MainActivity.this, NestScrollActivity.class));

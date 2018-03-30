@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 public class DragActivity extends AppCompatActivity {
     private android.view.View v;
+    private DrawerFrameLayout dfl;
     private android.widget.TextView tv1;
     private android.widget.TextView tv2;
     private android.widget.TextView tv3;
@@ -20,11 +21,13 @@ public class DragActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_drag);
+        setContentView(R.layout.activity_drag1);
         this.tv3 = (TextView) findViewById(R.id.tv3);
         this.tv2 = (TextView) findViewById(R.id.tv2);
         this.tv1 = (TextView) findViewById(R.id.tv1);
         this.v = (View) findViewById(R.id.v);
+        this.dfl = (DrawerFrameLayout) findViewById(R.id.dfl);
+
         tv1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,6 +46,5 @@ public class DragActivity extends AppCompatActivity {
                 Toast.makeText(DragActivity.this, "hh", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }
