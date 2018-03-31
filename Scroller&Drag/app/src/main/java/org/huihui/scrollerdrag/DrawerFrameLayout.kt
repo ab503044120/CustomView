@@ -98,14 +98,12 @@ class DrawerFrameLayout : ViewGroup {
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
             var lp = releasedChild.layoutParams as LayoutParams
-            if (yvel > 0) {
+            if (yvel > 400 || (yvel == 0f && releasedChild.top > -releasedChild.measuredHeight / 2)) {
                 topViewDragHelper.smoothSlideViewTo(releasedChild, lp.leftMargin, 0)
                 invalidate()
-            } else if (yvel < 0) {
+            } else if (yvel < -400 || (yvel == 0f && releasedChild.top <= -releasedChild.measuredHeight / 2)) {
                 topViewDragHelper.smoothSlideViewTo(releasedChild, lp.leftMargin, -releasedChild.measuredHeight)
                 invalidate()
-            } else {
-
             }
 
         }
