@@ -30,11 +30,10 @@ public class MainActivity extends AppCompatActivity {
         mStrings.add("ScrollerActivity");
         mStrings.add("DragActivity");
         mStrings.add("DrawerLayoutActivity");
+        mStrings.add("DrawerFramLayoutActivity");
 
         rvcontent.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         rvcontent.setAdapter(new RvAdapter());
-        new DrawerFrameLayout(this);
-
     }
 
     public class RvAdapter extends RecyclerView.Adapter {
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(new Intent(MainActivity.this, DrawerLayoutActivity.class));
                             break;
                         case 3:
-//                            startActivity(new Intent(MainActivity.this, NestScrollActivity.class));
+                            startActivity(new Intent(MainActivity.this, DrawerFramLayoutActivity.class));
                             break;
                     }
                 }

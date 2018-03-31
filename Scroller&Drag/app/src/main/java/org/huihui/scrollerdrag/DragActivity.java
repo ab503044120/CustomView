@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 public class DragActivity extends AppCompatActivity {
     private android.view.View v;
-    private DrawerFrameLayout dfl;
     private android.widget.TextView tv1;
     private android.widget.TextView tv2;
     private android.widget.TextView tv3;
@@ -26,7 +25,6 @@ public class DragActivity extends AppCompatActivity {
         this.tv2 = (TextView) findViewById(R.id.tv2);
         this.tv1 = (TextView) findViewById(R.id.tv1);
         this.v = (View) findViewById(R.id.v);
-        this.dfl = (DrawerFrameLayout) findViewById(R.id.dfl);
 
         tv1.setOnClickListener(new View.OnClickListener() {
             @Override

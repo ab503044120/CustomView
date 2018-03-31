@@ -97,6 +97,9 @@ public class DragFramlayout extends FrameLayout {
         super(context, attrs, defStyle);
         mViewDragHelper = ViewDragHelper.create(this, mCallback);
         mViewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_TOP);
+        final float density = getResources().getDisplayMetrics().density;
+        final float minVel = 400 * density;
+        mViewDragHelper.setMinVelocity(minVel);
     }
 
     @Override

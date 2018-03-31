@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.huihui.scrollerdrag.DrawerFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#778822">
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_margin="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:background="#227f99">
+
+    </FrameLayout>
+</org.huihui.scrollerdrag.DrawerFrameLayout>
