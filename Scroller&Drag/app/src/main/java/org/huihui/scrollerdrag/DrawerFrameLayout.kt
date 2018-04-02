@@ -5,6 +5,7 @@ import android.support.v4.view.ViewCompat
 import android.support.v4.widget.ViewDragHelper
 import android.support.v4.widget.ViewDragHelper.create
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -58,11 +59,12 @@ class DrawerFrameLayout : ViewGroup {
                 lp1.topMargin + content.measuredHeight)
         var drawer = getChildAt(1)
         var lp2 = drawer.layoutParams as LayoutParams
-        drawer.layout(lp2.leftMargin, -drawer.measuredHeight
-                , lp2.leftMargin + drawer.measuredWidth, 0)
+        drawer.layout(lp2.leftMargin, -drawer.measuredHeight + lp2.offset
+                , lp2.leftMargin + drawer.measuredWidth, lp2.offset)
     }
 
     class LayoutParams : ViewGroup.MarginLayoutParams {
+        var offset = 0
 
         constructor(width: Int, height: Int) : super(width, height)
 
@@ -98,10 +100,10 @@ class DrawerFrameLayout : ViewGroup {
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
             var lp = releasedChild.layoutParams as LayoutParams
-            if (yvel > 400 || (yvel == 0f && releasedChild.top > -releasedChild.measuredHeight / 2)) {
+            if (yvel > 0 || (yvel == 0f && releasedChild.top > -releasedChild.measuredHeight / 2)) {
                 topViewDragHelper.smoothSlideViewTo(releasedChild, lp.leftMargin, 0)
                 invalidate()
-            } else if (yvel < -400 || (yvel == 0f && releasedChild.top <= -releasedChild.measuredHeight / 2)) {
+            } else if (yvel <= 0 || (yvel == 0f && releasedChild.top <= -releasedChild.measuredHeight / 2)) {
                 topViewDragHelper.smoothSlideViewTo(releasedChild, lp.leftMargin, -releasedChild.measuredHeight)
                 invalidate()
             }
@@ -114,12 +116,19 @@ class DrawerFrameLayout : ViewGroup {
         }
 
         override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
+            var finalTop = if (top > 0) 0 else top
             var lp = child.layoutParams as LayoutParams
-            return if (top > lp.topMargin) lp.topMargin else top
+            lp.offset = child.measuredHeight + finalTop
+            Log.e(TAG, "clampViewPositionVertical: " + finalTop)
+            return finalTop
         }
 
         override fun onViewPositionChanged(changedView: View, left: Int, top: Int, dx: Int, dy: Int) {
-            super.onViewPositionChanged(changedView, left, top, dx, dy)
+            var lp = changedView.layoutParams as LayoutParams
+            var childOffset = top + changedView.measuredHeight
+            if (lp.offset != childOffset) {
+                lp.offset = childOffset
+            }
         }
 
         override fun getViewHorizontalDragRange(child: View): Int {
