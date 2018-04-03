@@ -12,7 +12,7 @@
   </FrameLayout>
 
     <FrameLayout
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:layout_gravity="left"
         android:background="#227f99"
         android:layout_width="match_parent"

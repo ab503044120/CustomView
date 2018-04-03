@@ -1,6 +1,10 @@
 package org.huihui.scrollerdrag
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.os.Build
 import android.support.v4.view.ViewCompat
 import android.support.v4.widget.ViewDragHelper
 import android.support.v4.widget.ViewDragHelper.create
@@ -14,7 +18,8 @@ import android.view.ViewGroup.LayoutParams
 class DrawerFrameLayout : ViewGroup {
     private lateinit var topViewDragHelper: ViewDragHelper
     private lateinit var drawerCallback: DrawerCallback
-
+    private lateinit var paint: Paint
+    private var drawerListeners = ArrayList<DrawerListener>()
     private val TAG: String = "DrawerFrameLayout"
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -27,6 +32,7 @@ class DrawerFrameLayout : ViewGroup {
         drawerCallback = DrawerCallback()
         topViewDragHelper = create(this, drawerCallback)
         topViewDragHelper.setEdgeTrackingEnabled(ViewDragHelper.EDGE_TOP)
+        paint = Paint(Paint.ANTI_ALIAS_FLAG)
     }
 
 
@@ -48,6 +54,9 @@ class DrawerFrameLayout : ViewGroup {
         var lp2 = drawer.layoutParams as LayoutParams
         var childWidthMeasureSpec = getChildMeasureSpec(widthMeasureSpec, lp2.leftMargin + lp2.rightMargin, lp2.width)
         var childHeightMeasureSpec = getChildMeasureSpec(heightMeasureSpec, lp2.bottomMargin, lp2.height)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            drawer.elevation = 30f
+        }
         drawer.measure(childWidthMeasureSpec, childHeightMeasureSpec)
 
     }
@@ -95,7 +104,9 @@ class DrawerFrameLayout : ViewGroup {
         }
 
         override fun onEdgeDragStarted(edgeFlags: Int, pointerId: Int) {
-            topViewDragHelper.captureChildView(getChildAt(1), pointerId)
+            if (isEnabled) {
+                topViewDragHelper.captureChildView(getChildAt(1), pointerId)
+            }
         }
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
@@ -126,9 +137,25 @@ class DrawerFrameLayout : ViewGroup {
         override fun onViewPositionChanged(changedView: View, left: Int, top: Int, dx: Int, dy: Int) {
             var lp = changedView.layoutParams as LayoutParams
             var childOffset = top + changedView.measuredHeight
+            if (childOffset == 0) {
+                if (changedView.visibility == View.VISIBLE) {
+                    changedView.visibility = View.INVISIBLE
+                    for (drawerListener in drawerListeners) {
+                        drawerListener.onClose()
+                    }
+                }
+            } else {
+                if (changedView.visibility == View.INVISIBLE) {
+                    changedView.visibility = View.VISIBLE
+                    for (drawerListener in drawerListeners) {
+                        drawerListener.onOpen()
+                    }
+                }
+            }
             if (lp.offset != childOffset) {
                 lp.offset = childOffset
             }
+            invalidate()
         }
 
         override fun getViewHorizontalDragRange(child: View): Int {
@@ -145,6 +172,43 @@ class DrawerFrameLayout : ViewGroup {
         return true
     }
 
+    override fun drawChild(canvas: Canvas?, child: View?, drawingTime: Long): Boolean {
+        var isContent = child == getChildAt(0)
+        var drawer = getChildAt(1)
+
+        var save = canvas!!.save()
+        var clipTop = 0
+        if (isContent) {
+            //如果没有
+            if (!hasOpaqueBackground(drawer) && drawer.width >= width) {
+                clipTop = drawer.bottom
+            }
+            canvas.clipRect(0, clipTop, width, height)
+        }
+        var result = super.drawChild(canvas, child, drawingTime)
+        canvas.restoreToCount(save)
+        if (isContent) {
+            var color = 0x00
+            if (drawer.height != 0) {
+                var layoutParams = drawer.layoutParams as LayoutParams
+                var percent = layoutParams.offset / (drawer.height * 1f)
+                color = ((percent * 0x99).toInt()).shl(24)
+            }
+            paint.color = color
+            canvas.drawRect(0f, clipTop.toFloat(), width.toFloat(), height.toFloat(), paint)
+        }
+
+
+        return result
+    }
+
+    private fun hasOpaqueBackground(v: View): Boolean {
+        val bg = v.background
+        return if (bg != null) {
+            bg.opacity == PixelFormat.OPAQUE
+        } else false
+    }
+
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         return topViewDragHelper.shouldInterceptTouchEvent(ev)
     }
@@ -155,4 +219,17 @@ class DrawerFrameLayout : ViewGroup {
         }
     }
 
+    public fun addDrawerListenr(drawerListener: DrawerListener) {
+        drawerListeners.add(drawerListener)
+    }
+
+    public fun removeDrawerListenr(drawerListener: DrawerListener) {
+        drawerListeners.remove(drawerListener)
+    }
+
+    interface DrawerListener {
+        fun onOpen()
+
+        fun onClose()
+    }
 }
